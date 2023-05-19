@@ -50,7 +50,35 @@ public class BookingManagementDbContext : DbContext
             .WithOne(e => e.education)
             .HasForeignKey<Education>(e => e.Guid);
 
-        //Relasi one to one antara Account dan Employee
+        //Relasi antara Employee dan Account (1 to 1)
+        builder.Entity<Account>()
+            .HasOne(e => e.employee)
+            .WithOne(a => a.account)
+            .HasForeignKey<Account>(e => e.Guid);
+
+        //Relasi antara rooms dan bookings (1 to many)
+        builder.Entity<Booking>()
+            .HasOne(r => r.Room)
+            .WithMany(b => b.bookings)
+            .HasForeignKey(r => r.RoomGuid);
+
+        builder.Entity<AccountRole>()
+                 .HasOne(a => a.account)
+                 .WithMany(ar => ar.accountRoles)
+                 .HasForeignKey(ar => ar.AccountGuid);
+
+        builder.Entity<AccountRole>()
+            .HasOne(r => r.role)
+            .WithMany(ar => ar.accountRoles)
+            .HasForeignKey(ar => ar.RoleGuid);
+
+        //Relasi antara employee dan bookings (1 to many)
+        builder.Entity<Booking>()
+            .HasOne(e => e.Employee)
+            .WithMany(b => b.bookings)
+            .HasForeignKey(r => r.EmployeeGuid);
+
+        /*//Relasi one to one antara Account dan Employee
         builder.Entity<Account>()
             .HasOne(e => e.employee)
             .WithOne(a => a.account)
@@ -60,13 +88,13 @@ public class BookingManagementDbContext : DbContext
         builder.Entity<AccountRole>()
             .HasOne(a => a.account)
             .WithMany(ar => ar.accountRoles)
-            .HasForeignKey(ar => ar.RoleGuid);
+            .HasForeignKey(ar => ar.AccountGuid);
 
         //Relasi one to many antara role dan accountroles
         builder.Entity<AccountRole>()
             .HasOne(r => r.role)
             .WithMany(ar => ar.accountRoles)
-            .HasForeignKey(ar => ar.AccountGuid);
+            .HasForeignKey(ar => ar.RoleGuid);
         
         //Relasi one to many antara Booking dan Employee
         builder.Entity<Booking>()
@@ -78,7 +106,7 @@ public class BookingManagementDbContext : DbContext
         builder.Entity<Booking>()
             .HasOne(r => r.Room)
             .WithMany(b => b.bookings)
-            .HasForeignKey(b => b.RoomGuid);
+            .HasForeignKey(b => b.RoomGuid);*/
     }
 
 }

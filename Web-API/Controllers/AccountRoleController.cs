@@ -18,25 +18,25 @@ public class AccountRoleController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        var account = _accountRoleRepository.GetAll();
-        if (account is null)
+        var accountRole = _accountRoleRepository.GetAll();
+        if (accountRole is null)
         {
             return NotFound();
         }
 
-        return Ok(account);
+        return Ok(accountRole);
     }
 
     [HttpGet("{guid}")]
     public IActionResult GetByGuid(Guid guid)
     {
-        var account = _accountRoleRepository.GetByGuid(guid);
-        if (account is null)
+        var accountRole = _accountRoleRepository.GetByGuid(guid);
+        if (accountRole is null)
         {
             return NotFound();
         }
 
-        return Ok(account);
+        return Ok(accountRole);
     }
 
     [HttpPost]

@@ -11,6 +11,6 @@ namespace Web_API.Models
         public Guid RoleGuid { get; set; }
 
         public Account? account { get; set; }
-        public Role role { get; set; }
+        public Role? role { get; set; }
     }
 }
