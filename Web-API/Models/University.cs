@@ -12,6 +12,6 @@ namespace Web_API.Models
         public string Name { get; set; }
 
         //Cardinalitas
-        public ICollection<Education> Educations { get; set; }
+        public ICollection<Education>? Educations { get; set; }
     }
 }

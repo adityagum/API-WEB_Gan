@@ -8,6 +8,6 @@ namespace Web_API.Models
         [Column("name", TypeName = "nvarchar(50)")]
         public string Name { get; set; }
 
-        public ICollection<AccountRole> accountRoles { get; set;}
+        public ICollection<AccountRole>? accountRoles { get; set;}
     }
 }

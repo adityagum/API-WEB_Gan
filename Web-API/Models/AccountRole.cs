@@ -10,7 +10,7 @@ namespace Web_API.Models
         [Column("role_guid")]
         public Guid RoleGuid { get; set; }
 
-        public Account account { get; set; }
+        public Account? account { get; set; }
         public Role role { get; set; }
     }
 }
