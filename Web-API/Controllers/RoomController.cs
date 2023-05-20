@@ -9,17 +9,17 @@ namespace Web_API.Controllers;
 
 public class RoomController : ControllerBase
 {
-    private readonly IRoomRepository _roomController;
+    private readonly IRoomRepository _roomRepository;
 
     public RoomController(IRoomRepository roomRepository)
     {
-        _roomController = roomRepository;
+        _roomRepository = roomRepository;
     }
 
     [HttpGet]
     public IActionResult GetAll()
     {
-        var room = _roomController.GetAll();
+        var room = _roomRepository.GetAll();
         if (room is null)
         {
             return NotFound();
@@ -31,7 +31,7 @@ public class RoomController : ControllerBase
     [HttpGet("{guid}")]
     public IActionResult GetByGuid(Guid guid)
     {
-        var room = _roomController.GetByGuid(guid);
+        var room = _roomRepository.GetByGuid(guid);
         if (room is null)
         {
             return NotFound();
@@ -43,7 +43,7 @@ public class RoomController : ControllerBase
     [HttpPost]
     public IActionResult Create(Room room)
     {
-        var result = _roomController.Create(room);
+        var result = _roomRepository.Create(room);
         if (result is null)
         {
             return BadRequest();
@@ -56,7 +56,7 @@ public class RoomController : ControllerBase
     [HttpPut]
     public IActionResult Update(Room room)
     {
-        var isUpdated = _roomController.Update(room);
+        var isUpdated = _roomRepository.Update(room);
         if (!isUpdated)
         {
             return BadRequest();
@@ -67,7 +67,7 @@ public class RoomController : ControllerBase
     [HttpDelete("{guid}")]
     public IActionResult Delete(Guid guid)
     {
-        var isDeleted = _roomController.Delete(guid);
+        var isDeleted = _roomRepository.Delete(guid);
         if (!isDeleted)
         {
             return BadRequest();

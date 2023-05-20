@@ -21,7 +21,7 @@ namespace Web_API.Models
         public DateTime ExpiredTime { get; set; }
 
         //Cardinality
-        public Employee? employee { get; set; }
-        public ICollection<AccountRole>? accountRoles { get; set; }
+        public Employee? Employee { get; set; }
+        public ICollection<AccountRole>? AccountRoles { get; set; }
     }
 }

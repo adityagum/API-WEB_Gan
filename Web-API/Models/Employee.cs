@@ -31,7 +31,7 @@ public class Employee : BaseEntity
     public string PhoneNumber { get; set; }
 
     // Cardinality
-    public Education? education { get; set; }
-    public Account? account { get; set; }
-    public ICollection<Booking>? bookings { get; set; }
+    public Education? Education { get; set; }
+    public Account? Account { get; set; }
+    public ICollection<Booking>? Bookings { get; set; }
 }

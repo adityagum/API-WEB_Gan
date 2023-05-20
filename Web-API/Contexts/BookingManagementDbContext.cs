@@ -14,7 +14,7 @@ public class BookingManagementDbContext : DbContext
     public DbSet<AccountRole> AccountRoles { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Employee> Employees { get; set; }
-    public DbSet<Education> educations { get; set; }
+    public DbSet<Education> Educations { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Room> Rooms { get; set; }
     public DbSet<University> Universities { get; set; }
@@ -32,7 +32,7 @@ public class BookingManagementDbContext : DbContext
 
         //Relasi one to many antara education dan university
         builder.Entity<Education>()
-            .HasOne(u => u.university)
+            .HasOne(u => u.University)
             .WithMany(e => e.Educations)
             .HasForeignKey(e => e.UniversityGuid);
 
@@ -46,67 +46,37 @@ public class BookingManagementDbContext : DbContext
 
         //Relasi one to one antara Education and Employee
         builder.Entity<Education>()
-            .HasOne(e => e.employee)
-            .WithOne(e => e.education)
-            .HasForeignKey<Education>(e => e.Guid);
+            .HasOne(e => e.Employee)
+            .WithOne(ed => ed.Education)
+            .HasForeignKey<Education>(ed => ed.Guid);
 
         //Relasi antara Employee dan Account (1 to 1)
         builder.Entity<Account>()
-            .HasOne(e => e.employee)
-            .WithOne(a => a.account)
+            .HasOne(e => e.Employee)
+            .WithOne(a => a.Account)
             .HasForeignKey<Account>(e => e.Guid);
 
         //Relasi antara rooms dan bookings (1 to many)
         builder.Entity<Booking>()
             .HasOne(r => r.Room)
-            .WithMany(b => b.bookings)
-            .HasForeignKey(r => r.RoomGuid);
+            .WithMany(b => b.Bookings)
+            .HasForeignKey(b => b.RoomGuid);
 
         builder.Entity<AccountRole>()
-                 .HasOne(a => a.account)
-                 .WithMany(ar => ar.accountRoles)
-                 .HasForeignKey(ar => ar.AccountGuid);
+            .HasOne(r => r.Role)
+            .WithMany(ac => ac.AccountRoles)
+            .HasForeignKey(r => r.RoleGuid);
 
         builder.Entity<AccountRole>()
-            .HasOne(r => r.role)
-            .WithMany(ar => ar.accountRoles)
-            .HasForeignKey(ar => ar.RoleGuid);
+            .HasOne(a => a.Account)
+            .WithMany(a => a.AccountRoles)
+            .HasForeignKey(a => a.AccountGuid);
 
         //Relasi antara employee dan bookings (1 to many)
         builder.Entity<Booking>()
             .HasOne(e => e.Employee)
-            .WithMany(b => b.bookings)
-            .HasForeignKey(r => r.EmployeeGuid);
-
-        /*//Relasi one to one antara Account dan Employee
-        builder.Entity<Account>()
-            .HasOne(e => e.employee)
-            .WithOne(a => a.account)
-            .HasForeignKey<Account>(a => a.Guid);
-
-        //Relasi one to many antara Account dan Account Role
-        builder.Entity<AccountRole>()
-            .HasOne(a => a.account)
-            .WithMany(ar => ar.accountRoles)
-            .HasForeignKey(ar => ar.AccountGuid);
-
-        //Relasi one to many antara role dan accountroles
-        builder.Entity<AccountRole>()
-            .HasOne(r => r.role)
-            .WithMany(ar => ar.accountRoles)
-            .HasForeignKey(ar => ar.RoleGuid);
-        
-        //Relasi one to many antara Booking dan Employee
-        builder.Entity<Booking>()
-            .HasOne(e => e.Employee)
-            .WithMany(b => b.bookings)
-            .HasForeignKey(ar => ar.EmployeeGuid);
-
-        //Relasi one to many antara Booking dan Room
-        builder.Entity<Booking>()
-            .HasOne(r => r.Room)
-            .WithMany(b => b.bookings)
-            .HasForeignKey(b => b.RoomGuid);*/
+            .WithMany(b => b.Bookings)
+            .HasForeignKey(b => b.EmployeeGuid);
     }
 
 }

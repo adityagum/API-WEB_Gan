@@ -18,7 +18,7 @@ namespace Web_API.Models
         public Guid UniversityGuid { get; set; }
 
         //Cardinality
-        public University? university { get; set; }
-        public Employee? employee { get; set; }
+        public University? University { get; set; }
+        public Employee? Employee { get; set; }
     }
 }
