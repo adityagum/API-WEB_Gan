@@ -9,8 +9,8 @@ namespace Web_API.Controllers;
 public class EmployeeController : ControllerBase
 {
 
-    private readonly IEmployeeRepository _employeeRepository;
-    public EmployeeController(IEmployeeRepository employeeRepository)
+    private readonly IGenericRepository<Employee> _employeeRepository;
+    public EmployeeController(IGenericRepository<Employee> employeeRepository)
     {
         _employeeRepository = employeeRepository;
     }

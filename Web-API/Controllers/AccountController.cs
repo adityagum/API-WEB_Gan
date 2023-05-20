@@ -10,9 +10,9 @@ namespace Web_API.Controllers;
 [Route("api/[controller]")]
 public class AccountController : ControllerBase
 {
-    private readonly IAccountRepository _accountRepository;
+    private readonly IGenericRepository<Account> _accountRepository;
 
-    public AccountController(IAccountRepository accountRepository)
+    public AccountController(IGenericRepository<Account> accountRepository)
     {
         _accountRepository = accountRepository;
     }

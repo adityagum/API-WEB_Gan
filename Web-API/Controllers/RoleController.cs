@@ -10,9 +10,9 @@ namespace Web_API.Controllers;
 
 public class RoleController : ControllerBase
 {
-    private readonly IRoleRepository _roleRepository;
+    private readonly IGenericRepository<Role> _roleRepository;
 
-    public RoleController(IRoleRepository roleRepository)
+    public RoleController(IGenericRepository<Role> roleRepository)
     {
         _roleRepository = roleRepository;
     }

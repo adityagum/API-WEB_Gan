@@ -9,8 +9,8 @@ namespace Web_API.Controllers;
 
 public class UniversityController : ControllerBase
 {
-    private readonly IUniversityRepository _universityRepository;
-    public UniversityController(IUniversityRepository universityRepository)
+    private readonly IGenericRepository<University> _universityRepository;
+    public UniversityController(IGenericRepository<University> universityRepository)
     {
         _universityRepository = universityRepository;
     }

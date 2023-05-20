@@ -1,35 +1,36 @@
 ﻿using Web_API.Contexts;
 using Web_API.Contracts;
-using Web_API.Models;
 
 namespace Web_API.Repositories;
 
-public class RoleRepository : IRoleRepository
+public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     private readonly BookingManagementDbContext _context;
-    public RoleRepository(BookingManagementDbContext context)
+
+    public GenericRepository(BookingManagementDbContext context)
     {
         _context = context;
     }
-    public Role Create(Role role)
+
+    public T Create(T t)
     {
         try
         {
-            _context.Set<Role>().Add(role);
+            _context.Set<T>().Add(t);
             _context.SaveChanges();
-            return role;
+            return t;
         }
         catch
         {
-            return new Role();
+            return null;
         }
     }
 
-    public bool Update(Role role)
+    public bool Update(T t)
     {
         try
         {
-            _context.Set<Role>().Update(role);
+            _context.Set<T>().Update(t);
             _context.SaveChanges();
             return true;
         }
@@ -43,13 +44,13 @@ public class RoleRepository : IRoleRepository
     {
         try
         {
-            var role = GetByGuid(guid);
-            if (role == null)
+            var t = GetByGuid(guid);
+            if (t == null)
             {
                 return false;
             }
 
-            _context.Set<Role>().Remove(role);
+            _context.Set<T>().Remove(t);
             _context.SaveChanges();
             return true;
         }
@@ -59,15 +60,14 @@ public class RoleRepository : IRoleRepository
         }
     }
 
-    public IEnumerable<Role> GetAll()
+    public IEnumerable<T> GetAll()
     {
-        return _context.Set<Role>().ToList();
+        return _context.Set<T>().ToList();
     }
 
-    public Role? GetByGuid(Guid guid)
+    public T GetByGuid(Guid guid)
     {
-        return _context.Set<Role>().Find(guid);
+        return _context.Set<T>().Find(guid);
     }
 
-    
 }
