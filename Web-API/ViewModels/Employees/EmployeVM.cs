@@ -5,7 +5,8 @@ using Web_API.Utility;
 namespace Web_API.ViewModels.Employees
 {
     public class EmployeVM
-    { 
+    {
+        public Guid? Guid { get; set; }
         public string Nik { get; set; }
 
         public string FirstName { get; set; }

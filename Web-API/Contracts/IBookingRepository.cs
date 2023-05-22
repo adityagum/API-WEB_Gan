@@ -4,7 +4,7 @@ namespace Web_API.Contracts
 {
     public interface IBookingRepository : IGenericRepository<Booking>
     {
-        IEnumerable<Booking> GetByRoomGuid(Guid roomId);
-        IEnumerable<Booking> GetByEmployeeGuid(Guid employeeId);
+        /*IEnumerable<Booking> GetByRoomGuid(Guid roomId);
+        IEnumerable<Booking> GetByEmployeeGuid(Guid employeeId);*/
     }
 }
