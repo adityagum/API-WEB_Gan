@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web_API.Contracts;
 using Web_API.Models;
+using Web_API.ViewModels.Bookings;
 
 namespace Web_API.Controllers;
 
@@ -9,10 +10,12 @@ namespace Web_API.Controllers;
 [Route("api/[controller]")]
 public class BookingController : ControllerBase
 {
-    private readonly IGenericRepository<Booking> _bookingRepository;
-    public BookingController(IGenericRepository<Booking> bookingRepository)
+    private readonly IBookingRepository _bookingRepository;
+    private readonly IMapper<Booking, BookingVM> _bkmapper;
+    public BookingController(IBookingRepository bookingRepository, IMapper<Booking, BookingVM> bkmapper)
     {
         _bookingRepository = bookingRepository;
+        _bkmapper = bkmapper;
     }
 
     [HttpGet]
@@ -23,7 +26,10 @@ public class BookingController : ControllerBase
         {
             return NotFound();
         }
-        return Ok(bookings);
+
+        var data = bookings.Select(_bkmapper.Map).ToList();
+
+        return Ok(data);
     }
     [HttpGet("{guid}")]
     public IActionResult GetByGuid(Guid id)
@@ -34,27 +40,33 @@ public class BookingController : ControllerBase
             return NotFound();
         }
 
-        return Ok(booking);
+        var data = _bkmapper.Map(booking);
+
+        return Ok(data);
     }
 
     [HttpPost]
-    public IActionResult Create(Booking booking)
+    public IActionResult Create(BookingVM bookingVM)
     {
-        var result = _bookingRepository.Create(booking);
+        var bkconverted = _bkmapper.Map(bookingVM);
+        var result = _bookingRepository.Create(bkconverted);
         if (result is null)
         {
             return NotFound();
         }
+
         return Ok(result);
     }
     [HttpPut]
-    public IActionResult Update(Booking booking)
+    public IActionResult Update(BookingVM bookingVM)
     {
-        var IsUpdate = _bookingRepository.Update(booking);
+        var bkconverted = (_bkmapper.Map(bookingVM));
+        var IsUpdate = _bookingRepository.Update(bkconverted);
         if (IsUpdate)
         {
             return BadRequest();
         }
+
         return Ok();
     }
     [HttpDelete("{guid}")]

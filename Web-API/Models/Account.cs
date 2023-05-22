@@ -1,5 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
+/*
+ * Jika menggunakan pattern repository, model hanya berisi properti atau singkatnya replikasi dari tabel didatabase,
+ * dan karena kita menggunkan ORM, didalam model terdapat cardinalitas juga
+*/
+
 namespace Web_API.Models
 {
     [Table("tb_m_accounts")]

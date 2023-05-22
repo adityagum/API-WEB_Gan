@@ -2,6 +2,8 @@
 using Web_API.Contracts;
 using Web_API.Models;
 using Web_API.Repositories;
+using Web_API.ViewModels.Accounts;
+using Web_API.ViewModels.Educations;
 
 namespace Web_API.Controllers;
 
@@ -10,11 +12,14 @@ namespace Web_API.Controllers;
 [Route("api/[controller]")]
 public class AccountController : ControllerBase
 {
-    private readonly IGenericRepository<Account> _accountRepository;
+    private readonly IAccountRepository _accountRepository;
+    private readonly IMapper<Account, AccountVM> _accountMapper;
 
-    public AccountController(IGenericRepository<Account> accountRepository)
+    public AccountController(IAccountRepository accountRepository, 
+        IMapper<Account, AccountVM> accountMapper)
     {
         _accountRepository = accountRepository;
+        _accountMapper = accountMapper;
     }
 
     [HttpGet]
@@ -25,6 +30,7 @@ public class AccountController : ControllerBase
         {
             return NotFound();
         }
+        var resultConverted = account.Select(_accountMapper.Map).ToList();
 
         return Ok(account);
     }
@@ -38,13 +44,16 @@ public class AccountController : ControllerBase
             return NotFound();
         }
 
+        var data = _accountMapper.Map(account);
+
         return Ok(account);
     }
 
     [HttpPost]
-    public IActionResult Create(Account account)
+    public IActionResult Create(AccountVM accountVM)
     {
-        var result = _accountRepository.Create(account);
+        var accountConverted = _accountMapper.Map(accountVM);
+        var result = _accountRepository.Create(accountConverted);
         if (result is null)
         {
             return BadRequest();
@@ -55,9 +64,10 @@ public class AccountController : ControllerBase
 
 
     [HttpPut]
-    public IActionResult Update(Account account)
+    public IActionResult Update(AccountVM accountVM)
     {
-        var isUpdated = _accountRepository.Update(account);
+        var accountConverted = _accountMapper.Map(accountVM);
+        var isUpdated = _accountRepository.Update(accountConverted);
         if (!isUpdated)
         {
             return BadRequest();

@@ -3,19 +3,29 @@ using Web_API.Contracts;
 
 namespace Web_API.Repositories;
 
+/*
+Repository ini berfungsi untuk melakukan interaksi dengan database, sama halnya dengan kita ingin 
+menambahkan data, mengambil data, update atau delete. 
+ */
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
-    private readonly BookingManagementDbContext _context;
+    protected readonly BookingManagementDbContext _context;
 
     public GenericRepository(BookingManagementDbContext context)
     {
         _context = context;
     }
 
-    public T Create(T t)
+    public T? Create(T t)
     {
         try
         {
+            typeof(T).GetProperty("CreatedDate")!
+                .SetValue(t, DateTime.Now);
+
+            typeof(T).GetProperty("ModifiedDate")!
+                .SetValue(t, DateTime.Now);
+
             _context.Set<T>().Add(t);
             _context.SaveChanges();
             return t;
@@ -30,6 +40,22 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         try
         {
+            var guid = (Guid) typeof(T).GetProperty("Guid")!
+                                       .GetValue(t)!;
+            var oldEntity = GetByGuid(guid);
+            if (oldEntity == null) {
+                return false;
+            }
+
+            var getCreatedDate = typeof(T).GetProperty("CreatedDate")!
+                                          .GetValue(oldEntity)!;
+
+            typeof(T).GetProperty("CreatedDate")!
+                .SetValue(t, getCreatedDate);
+
+            typeof(T).GetProperty("ModifiedDate")!
+                .SetValue(t, DateTime.Now);
+
             _context.Set<T>().Update(t);
             _context.SaveChanges();
             return true;
@@ -67,7 +93,14 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 
     public T GetByGuid(Guid guid)
     {
-        return _context.Set<T>().Find(guid);
+        var entity = _context.Set<T>().Find(guid);
+        _context.ChangeTracker.Clear();
+        return entity;
+    }
+
+    public T GetByName(T t)
+    {
+        return _context.Set<T>().Find(t);
     }
 
 }

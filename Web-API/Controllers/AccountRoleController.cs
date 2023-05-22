@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web_API.Contracts;
 using Web_API.Models;
+using Web_API.ViewModels.AccountRoles;
 
 namespace Web_API.Controllers;
 
@@ -8,11 +9,14 @@ namespace Web_API.Controllers;
 [Route("api/[controller]")]
 public class AccountRoleController : ControllerBase
 {
-    private readonly IGenericRepository<AccountRole> _accountRoleRepository;
+    private readonly IAccountRoleRepository _accountRoleRepository;
+    private readonly IMapper<AccountRole, AccountRolesVM> _armapper;
 
-    public AccountRoleController(IGenericRepository<AccountRole> accountRoleRepository)
+    public AccountRoleController(IAccountRoleRepository accountRoleRepository, 
+        IMapper<AccountRole, AccountRolesVM> armapper)
     {
         _accountRoleRepository = accountRoleRepository;
+        _armapper = armapper;
     }
 
     [HttpGet]
@@ -23,6 +27,8 @@ public class AccountRoleController : ControllerBase
         {
             return NotFound();
         }
+
+        var result = accountrole.Select(_armapper.Map).ToList();
 
         return Ok(accountrole);
     }
@@ -36,13 +42,16 @@ public class AccountRoleController : ControllerBase
             return NotFound();
         }
 
+        var data = _armapper.Map(accountrole);
+
         return Ok(accountrole);
     }
 
     [HttpPost]
-    public IActionResult Create(AccountRole accountRole)
+    public IActionResult Create(AccountRolesVM accountRolesVM)
     {
-        var result = _accountRoleRepository.Create(accountRole);
+        var arConverted = _armapper.Map(accountRolesVM);
+        var result = _accountRoleRepository.Create(arConverted);
         if (result is null)
         {
             return BadRequest();
@@ -53,9 +62,10 @@ public class AccountRoleController : ControllerBase
 
 
     [HttpPut]
-    public IActionResult Update(AccountRole accountRole)
+    public IActionResult Update(AccountRolesVM accountRolesVM)
     {
-        var isUpdated = _accountRoleRepository.Update(accountRole);
+        var arConverted = _armapper.Map(accountRolesVM);
+        var isUpdated = _accountRoleRepository.Update(arConverted);
         if (!isUpdated)
         {
             return BadRequest();

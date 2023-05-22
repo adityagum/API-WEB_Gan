@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web_API.Contracts;
 using Web_API.Models;
+using Web_API.ViewModels.Educations;
+using Web_API.ViewModels.Employees;
 
 namespace Web_API.Controllers;
 
@@ -9,10 +11,12 @@ namespace Web_API.Controllers;
 public class EmployeeController : ControllerBase
 {
 
-    private readonly IGenericRepository<Employee> _employeeRepository;
-    public EmployeeController(IGenericRepository<Employee> employeeRepository)
+    private readonly IEmployeeRepository _employeeRepository;
+    private readonly IMapper<Employee, EmployeVM> _empmapper;
+    public EmployeeController(IEmployeeRepository employeeRepository, IMapper<Employee, EmployeVM> empmapper)
     {
         _employeeRepository = employeeRepository;
+        _empmapper = empmapper;
     }
 
     [HttpGet]
@@ -24,7 +28,9 @@ public class EmployeeController : ControllerBase
             return NotFound();
         }
 
-        return Ok(employees);
+        var empresult = employees.Select(_empmapper.Map).ToList();
+
+        return Ok(empresult);
     }
 
     [HttpGet("{guid}")]
@@ -36,13 +42,16 @@ public class EmployeeController : ControllerBase
             return NotFound();
         }
 
-        return Ok(employee);
+        var empresult = _empmapper.Map(employee);
+
+        return Ok(empresult);
     }
 
     [HttpPost]
-    public IActionResult Create(Employee employee)
+    public IActionResult Create(EmployeVM employeVM)
     {
-        var result = _employeeRepository.Create(employee);
+        var empconverted = _empmapper.Map(employeVM);
+        var result = _employeeRepository.Create(empconverted);
         if (result is null)
         {
             return BadRequest();
@@ -52,9 +61,10 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpPut]
-    public IActionResult Update(Employee employee)
+    public IActionResult Update(EmployeVM employeVM)
     {
-        var isUpdated = _employeeRepository.Update(employee);
+        var empconverted = _empmapper.Map(employeVM);
+        var isUpdated = _employeeRepository.Update(empconverted);
         if (!isUpdated)
         {
             return BadRequest();

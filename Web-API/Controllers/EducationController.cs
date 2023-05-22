@@ -2,6 +2,8 @@
 using Web_API.Contracts;
 using Web_API.Models;
 using Web_API.Repositories;
+using Web_API.ViewModels.Educations;
+using Web_API.ViewModels.Universities;
 
 namespace Web_API.Controllers;
 
@@ -10,23 +12,40 @@ namespace Web_API.Controllers;
 
 public class EducationController : ControllerBase
 {
-    private readonly IGenericRepository<Education> _educationRepository;
-
-    public EducationController(IGenericRepository<Education> educationRepository)
+    private readonly IEducationRepository _educationRepository;
+    private readonly IMapper<Education, EducationVM> _educationVMMapper;
+    private readonly IMapper<University, UniversityVM> _mapper;
+    public EducationController(IEducationRepository educationRepository, 
+        IMapper<University, UniversityVM> mapper, 
+        IMapper<Education, EducationVM> educationMapper)
     {
         _educationRepository = educationRepository;
+        _mapper = mapper;
+        _educationVMMapper = educationMapper;
     }
+
 
     [HttpGet]
     public IActionResult GetAll()
     {
-        var room = _educationRepository.GetAll();
+        /*var room = _educationRepository.GetAll();
         if (room is null)
         {
             return NotFound();
         }
 
-        return Ok(room);
+        var resultConverted = room.Select(EducationVM.ToVM);
+        return Ok(resultConverted);
+        return Ok(room);*/
+
+        var education = _educationRepository.GetAll();
+        if (!education.Any())
+        {
+            return NotFound();
+        }
+        var resultConverted = education.Select(_educationVMMapper.Map).ToList();
+
+        return Ok(education);
     }
 
     [HttpGet("{guid}")]
@@ -38,13 +57,16 @@ public class EducationController : ControllerBase
             return NotFound();
         }
 
-        return Ok(room);
+        var data = _educationVMMapper.Map(room);
+
+        return Ok(data);
     }
 
     [HttpPost]
-    public IActionResult Create(Education education)
+    public IActionResult Create(EducationVM educationVM)
     {
-        var result = _educationRepository.Create(education);
+        var educationConverted = _educationVMMapper.Map(educationVM);
+        var result = _educationRepository.Create(educationConverted);
         if (result is null)
         {
             return BadRequest();
@@ -55,9 +77,10 @@ public class EducationController : ControllerBase
 
 
     [HttpPut]
-    public IActionResult Update(Education education)
+    public IActionResult Update(EducationVM educationVM)
     {
-        var isUpdated = _educationRepository.Update(education);
+        var educationConverted = _educationVMMapper.Map(educationVM);
+        var isUpdated = _educationRepository.Update(educationConverted);
         if (!isUpdated)
         {
             return BadRequest();

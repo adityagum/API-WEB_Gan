@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Web_API.Contracts;
 using Web_API.Models;
+using Web_API.ViewModels.Roles;
 
 namespace Web_API.Controllers;
 
@@ -10,11 +11,13 @@ namespace Web_API.Controllers;
 
 public class RoleController : ControllerBase
 {
-    private readonly IGenericRepository<Role> _roleRepository;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IMapper<Role, RoleVM> _roleMapper;
 
-    public RoleController(IGenericRepository<Role> roleRepository)
+    public RoleController(IRoleRepository roleRepository, IMapper<Role, RoleVM> roleMapper)
     {
         _roleRepository = roleRepository;
+        _roleMapper = roleMapper;
     }
 
     [HttpGet]
@@ -26,7 +29,9 @@ public class RoleController : ControllerBase
             return NotFound();
         }
 
-        return Ok(role);
+        var data = role.Select(_roleMapper.Map).ToList();
+
+        return Ok(data);
     }
 
     [HttpGet("{guid}")]
@@ -38,13 +43,16 @@ public class RoleController : ControllerBase
             return NotFound();
         }
 
-        return Ok(role);
+        var data = _roleMapper.Map(role);
+
+        return Ok(data);
     }
 
     [HttpPost]
-    public IActionResult Create(Role role)
+    public IActionResult Create(RoleVM roleVM)
     {
-        var result = _roleRepository.Create(role);
+        var empconverted = _roleMapper.Map(roleVM);
+        var result = _roleRepository.Create(empconverted);
         if (result is null)
         {
             return BadRequest();
@@ -55,9 +63,10 @@ public class RoleController : ControllerBase
 
 
     [HttpPut]
-    public IActionResult Update(Role role)
+    public IActionResult Update(RoleVM roleVM)
     {
-        var isUpdated = _roleRepository.Update(role);
+        var empconverted = _roleMapper.Map(roleVM);
+        var isUpdated = _roleRepository.Update(empconverted);
         if (!isUpdated)
         {
             return BadRequest();
