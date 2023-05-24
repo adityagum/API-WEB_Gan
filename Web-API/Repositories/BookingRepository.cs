@@ -40,9 +40,8 @@ namespace Web_API.Repositories
             /* Menampung semua data room di var rooms*/
             var rooms = _roomRepository.GetAll();
 
-            /* Mengambil semua data booking, selanjutnya menggunakan Where pada LINQ untuk memnfilter agar 
-               pemesanan dimulai pada hari selain Sabtu dan Minggu */
-            var bookings = GetAll().Where(b => b.StartDate.DayOfWeek != DayOfWeek.Saturday && b.StartDate.DayOfWeek != DayOfWeek.Sunday);
+            /* Mengambil semua data booking*/
+            var bookings = GetAll();
 
             /* Melakukan instance/membuat object untuk setiap pemesanan yang memenuhi kondisi diatas..
                Pada part ini, value RoomName akan diisi dengan nama Room yang dicari berdasarkan RoomGuid. */
