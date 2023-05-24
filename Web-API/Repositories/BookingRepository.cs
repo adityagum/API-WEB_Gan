@@ -3,21 +3,58 @@ using Web_API.Contexts;
 using Web_API.Contracts;
 using Web_API.Models;
 using Web_API.ViewModels.Accounts;
+using Web_API.ViewModels.Bookings;
 
 namespace Web_API.Repositories
 {
     public class BookingRepository : GenericRepository<Booking>, IBookingRepository
-    {
-        public BookingRepository(BookingManagementDbContext context) : base(context) { }
 
-        /*public IEnumerable<Booking> GetByEmployeeGuid(Guid employeeId)
+    {
+        private readonly IRoomRepository _roomRepository;
+        public BookingRepository(BookingManagementDbContext context, IRoomRepository roomRepository) : base(context) 
         {
-            return _context.Set<Booking>().Where(e => e.EmployeeGuid == employeeId);
+            _roomRepository = roomRepository;
         }
 
-        public IEnumerable<Booking> GetByRoomGuid(Guid roomId)
+        private int CalculateBookingLength(DateTime startDate, DateTime endDate)
         {
-            return _context.Set<Booking>().Where(e => e.RoomGuid == roomId);
-        }*/
+            int totalDays = 0; // Untuk menghitung hari
+            DateTime currentDate = startDate.Date; // Perhitungan tergantung dari tanggal yang digunakan
+
+            while (currentDate <= endDate.Date)
+            {
+                // Mengecek apakah currentDate adalah hari kerja (Selain sabtu dan minggu) 
+                if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    // Jika currentDate hari kerja, totalDays bertambah
+                    totalDays++;
+                }
+                currentDate = currentDate.AddDays(1); // untuk maju ke tanggal berikutnya.
+            }
+
+            return totalDays;
+        }
+
+        public IEnumerable<BookingLengthVM> GetBookingLength()
+        {
+            /* Menampung semua data room di var rooms*/
+            var rooms = _roomRepository.GetAll();
+
+            /* Mengambil semua data booking, selanjutnya menggunakan Where pada LINQ untuk memnfilter agar 
+               pemesanan dimulai pada hari selain Sabtu dan Minggu */
+            var bookings = GetAll().Where(b => b.StartDate.DayOfWeek != DayOfWeek.Saturday && b.StartDate.DayOfWeek != DayOfWeek.Sunday);
+
+            /* Melakukan instance/membuat object untuk setiap pemesanan yang memenuhi kondisi diatas..
+               Pada part ini, value RoomName akan diisi dengan nama Room yang dicari berdasarkan RoomGuid. */
+            var bookingLengths = bookings.Select(b => new BookingLengthVM
+            {
+                RoomName = rooms.FirstOrDefault(r => r.Guid == b.RoomGuid)?.Name, // Di set menjadi (?) untuk memastikan tidak terjadi kesalahan ketika objek tidak ditemukan, sehingga valuenya akan otomatis NULL
+                BookingLength = CalculateBookingLength(b.StartDate, b.EndDate)
+            });
+
+            return bookingLengths;
+        }
+
+        
     }
 }

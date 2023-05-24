@@ -79,4 +79,39 @@ public class BookingController : ControllerBase
         }
         return Ok();
     }
+
+    [HttpGet("bookinglength")]
+    public IActionResult GetBookingLength()
+    {
+        var bookingLengths = _bookingRepository.GetBookingLength();
+        if (!bookingLengths.Any())
+        {
+            return NotFound();
+        }
+
+        return Ok(bookingLengths);
+    }
+
+
+    /*[HttpGet("length/{guid}")]
+    public IActionResult GetBookingLength(Guid guid)
+    {
+        var booking = _bookingRepository.GetByGuid(guid);
+        if (booking == null)
+        {
+            return NotFound();
+        }
+
+        var bookingLength = _bookingRepository.calculateBooking(DateTime startDate, DateTime endDate);
+
+        var data = new
+        {
+            RoomName = booking.Room?.RoomName,
+            BookingLength = bookingLength
+        };
+
+        return Ok(data);*/
 }
+
+
+
