@@ -80,7 +80,7 @@ public class BookingController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("bookinglength")]
+    [HttpGet("bookingduration")]
     public IActionResult GetDuration()
     {
         var bookingLengths = _bookingRepository.GetBookingDuration();

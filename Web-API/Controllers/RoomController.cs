@@ -11,12 +11,19 @@ namespace Web_API.Controllers;
 public class RoomController : ControllerBase
 {
     private readonly IRoomRepository _roomRepository;
+    private readonly IBookingRepository _bookingRepository;
+    private readonly IEmployeeRepository _employeeRepository;
     private readonly IMapper<Room, RoomVM> _roomMapper;
 
-    public RoomController(IRoomRepository roomRepository, IMapper<Room, RoomVM> roomMapper)
+    public RoomController(IRoomRepository roomRepository, 
+        IMapper<Room, RoomVM> roomMapper,
+        IBookingRepository bookingRepository,
+        IEmployeeRepository employeeRepository)
     {
         _roomRepository = roomRepository;
         _roomMapper = roomMapper;
+        _bookingRepository = bookingRepository;
+        _employeeRepository = employeeRepository;
     }
 
     [HttpGet]
@@ -84,4 +91,47 @@ public class RoomController : ControllerBase
 
         return Ok();
     }
+
+    // Kelompok 1
+    [HttpGet("CurrentlyUsedRooms")]
+    public IActionResult GetCurrentlyUsedRooms()
+    {
+        var room = _roomRepository.GetCurrentlyUsedRooms();
+        if (room is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(room);
+    }
+
+    [HttpGet("CurrentlyUsedRoomsByDate")]
+    public IActionResult GetCurrentlyUsedRooms(DateTime dateTime)
+    {
+        var room = _roomRepository.GetByDate(dateTime);
+        if (room is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(room);
+    }
+
+    private string GetRoomStatus(Booking booking, DateTime dateTime)
+    {
+
+        if (booking.StartDate <= dateTime && booking.EndDate >= dateTime)
+        {
+            return "Occupied";
+        }
+        else if (booking.StartDate > dateTime)
+        {
+            return "Booked";
+        }
+        else
+        {
+            return "Available";
+        }
+    }
+    // End Kelompok 1
 }

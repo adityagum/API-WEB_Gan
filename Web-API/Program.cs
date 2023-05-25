@@ -15,7 +15,7 @@ var connectionString = builder.Configuration.GetConnectionString(name: "DefaultC
 builder.Services.AddDbContext<BookingManagementDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IUniversityRepository, UniversityRepository>();
-builder.Services.AddScoped<IRoomRepository, RoomRepoository>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEducationRepository, EducationRepository>();

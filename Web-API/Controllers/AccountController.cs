@@ -31,14 +31,6 @@ public class AccountController : ControllerBase
 
     public IActionResult Login(LoginVM loginVM)
     {
-        /*var account = _accountRepository.Login(loginVM);
-        if (account is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(account);*/
-
         var account = _accountRepository.Login(loginVM);
 
         if (account == null)
