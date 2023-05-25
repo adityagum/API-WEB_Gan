@@ -12,7 +12,7 @@ namespace Web_API.ViewModels.Employees
 
         public DateTime BirthDate { get; set; }
 
-        public GenderLevel Gender { get; set; }
+        public string Gender { get; set; }
 
         public DateTime HiringDate { get; set; }
 

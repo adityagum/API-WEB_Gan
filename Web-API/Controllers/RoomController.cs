@@ -117,22 +117,6 @@ public class RoomController : ControllerBase
         return Ok(room);
     }
 
-    private string GetRoomStatus(Booking booking, DateTime dateTime)
-    {
-
-        if (booking.StartDate <= dateTime && booking.EndDate >= dateTime)
-        {
-            return "Occupied";
-        }
-        else if (booking.StartDate > dateTime)
-        {
-            return "Booked";
-        }
-        else
-        {
-            return "Available";
-        }
-    }
     // End Kelompok 1
 
     // Kelompok 4
