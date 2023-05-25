@@ -16,7 +16,7 @@ namespace Web_API.Repositories
             _roomRepository = roomRepository;
         }
 
-        private int CalculateBookingLength(DateTime startDate, DateTime endDate)
+        private int CalculateBookingDuration(DateTime startDate, DateTime endDate)
         {
             int totalDays = 0; // Untuk menghitung hari
             DateTime currentDate = startDate.Date; // Perhitungan tergantung dari tanggal yang digunakan
@@ -35,7 +35,7 @@ namespace Web_API.Repositories
             return totalDays;
         }
 
-        public IEnumerable<BookingLengthVM> GetBookingLength()
+        public IEnumerable<BookingDurationVM> GetBookingDuration()
         {
             /* Menampung semua data room di var rooms*/
             var rooms = _roomRepository.GetAll();
@@ -45,13 +45,13 @@ namespace Web_API.Repositories
 
             /* Melakukan instance/membuat object untuk setiap pemesanan yang memenuhi kondisi diatas..
                Pada part ini, value RoomName akan diisi dengan nama Room yang dicari berdasarkan RoomGuid. */
-            var bookingLengths = bookings.Select(b => new BookingLengthVM
+            var bookingduration = bookings.Select(b => new BookingDurationVM
             {
                 RoomName = rooms.FirstOrDefault(r => r.Guid == b.RoomGuid)?.Name, // Di set menjadi (?) untuk memastikan tidak terjadi kesalahan ketika objek tidak ditemukan, sehingga valuenya akan otomatis NULL
-                BookingLength = CalculateBookingLength(b.StartDate, b.EndDate)
+                DurationOfBooking = CalculateBookingDuration(b.StartDate, b.EndDate)
             });
 
-            return bookingLengths;
+            return bookingduration;
         }
 
         

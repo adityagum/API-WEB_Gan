@@ -81,9 +81,9 @@ public class BookingController : ControllerBase
     }
 
     [HttpGet("bookinglength")]
-    public IActionResult GetBookingLength()
+    public IActionResult GetDuration()
     {
-        var bookingLengths = _bookingRepository.GetBookingLength();
+        var bookingLengths = _bookingRepository.GetBookingDuration();
         if (!bookingLengths.Any())
         {
             return NotFound();
