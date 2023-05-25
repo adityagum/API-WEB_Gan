@@ -8,5 +8,8 @@ namespace Web_API.Contracts
         // Kelompok 1
         IEnumerable<MasterRoomVM> GetByDate(DateTime dateTime);
         IEnumerable<RoomUsedVM> GetCurrentlyUsedRooms();
+
+        // Kelompok 4
+        IEnumerable<RoomBookedTodayVM> GetAvailableRoom();
     }
 }

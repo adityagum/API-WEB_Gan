@@ -9,13 +9,13 @@ public class RoomRepository : GenericRepository<Room>, IRoomRepository
 {
     /*private readonly IBookingRepository _bookingRepository;
     private readonly IEmployeeRepository _employeeRepository;*/
-  /*  public RoomRepository(BookingManagementDbContext context,
-        IBookingRepository bookingRepository,
-        IEmployeeRepository employeeRepository) : base(context)
-    {
-        _bookingRepository = bookingRepository;
-        _employeeRepository = employeeRepository;
-    }*/
+    /*  public RoomRepository(BookingManagementDbContext context,
+          IBookingRepository bookingRepository,
+          IEmployeeRepository employeeRepository) : base(context)
+      {
+          _bookingRepository = bookingRepository;
+          _employeeRepository = employeeRepository;
+      }*/
 
     public RoomRepository(BookingManagementDbContext context) : base(context)
     {
@@ -88,4 +88,53 @@ public class RoomRepository : GenericRepository<Room>, IRoomRepository
     }
 
     // End Kelompok 1
+
+    // Kelompok 4
+    public IEnumerable<RoomBookedTodayVM> GetAvailableRoom()
+    {
+        try
+        {
+            //get all data from booking and rooms
+            var booking = _context.Bookings.ToList();
+            var rooms = GetAll();
+
+            var startToday = DateTime.Today;
+            var endToday = DateTime.Today.AddHours(23).AddMinutes(59);
+
+            var roomUse = rooms.Join(booking, Room => Room.Guid, booking => booking.RoomGuid, (Room, booking) => new { Room, booking })
+                    .Select(joinResult => new
+                    {
+                        joinResult.Room.Name,
+                        joinResult.Room.Floor,
+                        joinResult.Room.Capacity,
+                        joinResult.booking.StartDate,
+                        joinResult.booking.EndDate
+                    }
+             );
+
+            var roomUseTodays = new List<RoomBookedTodayVM>();
+
+
+            foreach (var room in roomUse)
+            {
+                if ((room.StartDate < startToday && room.EndDate < startToday) || (room.StartDate > startToday && room.EndDate > endToday))
+                {
+                    var roomDay = new RoomBookedTodayVM
+                    {
+                        RoomName = room.Name,
+                        Floor = room.Floor,
+                        Capacity = room.Capacity
+                    };
+                    roomUseTodays.Add(roomDay);
+                }
+            }
+            return roomUseTodays;
+        }
+
+        catch
+        {
+            return null;
+
+        }
+    }
 }
