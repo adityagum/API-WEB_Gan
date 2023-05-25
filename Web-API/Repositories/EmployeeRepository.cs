@@ -95,4 +95,53 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
         return data;
     }
     // End Kel 1
+
+
+    // Kel 2
+    public int CreateWithValidate(Employee employee)
+    {
+        try
+        {
+            bool ExistsByEmail = _context.Employees.Any(e => e.Email == employee.Email);
+            if (ExistsByEmail)
+            {
+                return 1;
+            }
+
+            bool ExistsByPhoneNumber = _context.Employees.Any(e => e.PhoneNumber == employee.PhoneNumber);
+            if (ExistsByPhoneNumber)
+            {
+                return 2;
+            }
+
+            Create(employee);
+            return 3;
+
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+    // End Kelompok 2
+
+    // Kelompok 5 dan 6
+    public Guid? FindGuidByEmail(string email)
+    {
+        try
+        {
+            var employee = _context.Employees.FirstOrDefault(e => e.Email == email);
+            if (employee == null)
+            {
+                return null;
+            }
+            return employee.Guid;
+        }
+        catch
+        {
+            return null;
+        }   
+
+    }
+
 }

@@ -29,7 +29,7 @@ namespace Web_API.Repositories
                     // Jika currentDate hari kerja, totalDays bertambah
                     totalDays++;
                 }
-                currentDate = currentDate.AddDays(1); // untuk maju ke tanggal berikutnya.
+                currentDate = currentDate.AddDays(1); // untuk maju ke tanggal/hari berikutnya. 
             }
 
             return totalDays;

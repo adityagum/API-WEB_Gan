@@ -1,8 +1,9 @@
 ﻿namespace Web_API.ViewModels.Accounts
 {
-    public class AccountEmpVM
+    public class AccountResetPasswordVM
     {
+        // Kelompok 5
+        public int OTP { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
     }
 }

@@ -6,6 +6,15 @@ namespace Web_API.Contracts
 {
     public interface IAccountRepository : IGenericRepository<Account>
     {
-        AccountEmpVM Login(LoginVM loginVM);
+        LoginVM Login(LoginVM loginVM);
+
+        // Kelompok 2
+        int Register(RegisterVM registerVM);
+
+        // Kelompok 5
+        int UpdateOTP(Guid? employeeId);
+
+        // Kelompok 6
+        int ChangePasswordAccount(Guid? employeeId, ChangePasswordVM changePasswordVM);
     }
 }

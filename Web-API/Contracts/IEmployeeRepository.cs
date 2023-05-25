@@ -8,5 +8,11 @@ namespace Web_API.Contracts
         // Kelompok 1
         IEnumerable<MasterEmployeeVM> GetAllMasterEmployee();
         MasterEmployeeVM? GetMasterEmployeeByGuid(Guid guid);
+
+        // Kelompok 2
+        int CreateWithValidate(Employee employee);
+
+        // Kelompok 5
+        Guid? FindGuidByEmail(string email);
     }
 }
