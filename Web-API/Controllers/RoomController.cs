@@ -134,4 +134,25 @@ public class RoomController : ControllerBase
         }
     }
     // End Kelompok 1
+
+    // Kelompok 4
+    [HttpGet("AvailableRoom")]
+    public IActionResult GetAvailableRoom()
+    {
+        try
+        {
+            var room = _roomRepository.GetAvailableRoom();
+            if (room is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(room);
+        }
+        catch
+        {
+            return Ok("Ada error");
+        }
+    }
+    // End Kelompok 4
 }
