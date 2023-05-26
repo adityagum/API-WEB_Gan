@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Web_API.Contracts;
 using Web_API.Models;
+using Web_API.Others;
 using Web_API.ViewModels.AccountRoles;
 
 namespace Web_API.Controllers;
@@ -12,7 +14,7 @@ public class AccountRoleController : ControllerBase
     private readonly IAccountRoleRepository _accountRoleRepository;
     private readonly IMapper<AccountRole, AccountRolesVM> _armapper;
 
-    public AccountRoleController(IAccountRoleRepository accountRoleRepository, 
+    public AccountRoleController(IAccountRoleRepository accountRoleRepository,
         IMapper<AccountRole, AccountRolesVM> armapper)
     {
         _accountRoleRepository = accountRoleRepository;
@@ -25,12 +27,23 @@ public class AccountRoleController : ControllerBase
         var accountrole = _accountRoleRepository.GetAll();
         if (accountrole is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<AccountRolesVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = " Data was not found"
+            });
         }
 
         var result = accountrole.Select(_armapper.Map).ToList();
 
-        return Ok(accountrole);
+        return Ok(new ResponseVM<List<AccountRolesVM>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data accountrole successfully found",
+            Data = result
+        });
     }
 
     [HttpGet("{guid}")]
@@ -39,12 +52,23 @@ public class AccountRoleController : ControllerBase
         var accountrole = _accountRoleRepository.GetByGuid(guid);
         if (accountrole is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<AccountRolesVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Guid not found"
+            });
         }
 
         var data = _armapper.Map(accountrole);
 
-        return Ok(accountrole);
+        return Ok(new ResponseVM<AccountRolesVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found Guid",
+            Data = data
+        });
     }
 
     [HttpPost]
@@ -54,10 +78,20 @@ public class AccountRoleController : ControllerBase
         var result = _accountRoleRepository.Create(arConverted);
         if (result is null)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountRolesVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Create AccountRole Failed"
+            });
         }
 
-        return Ok(result);
+        return Ok(new ResponseVM<AccountRolesVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Create Account Success"
+        });
     }
 
 
@@ -68,10 +102,20 @@ public class AccountRoleController : ControllerBase
         var isUpdated = _accountRoleRepository.Update(arConverted);
         if (!isUpdated)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountRolesVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Update AccountRole Failed"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<AccountRolesVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Create AccountRole Success"
+        });
     }
 
     [HttpDelete("{guid}")]
@@ -80,9 +124,19 @@ public class AccountRoleController : ControllerBase
         var isDeleted = _accountRoleRepository.Delete(guid);
         if (!isDeleted)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountRolesVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Delete AccountRole Failed"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<AccountRolesVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Delete AccountRole Success"
+        });
     }
 }

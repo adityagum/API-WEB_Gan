@@ -11,7 +11,7 @@ using Web_API.ViewModels.Accounts;
 using Web_API.ViewModels.Educations;
 using Web_API.ViewModels.Employees;
 using Web_API.ViewModels.Login;
-using Web_API.ViewModels.Response;
+using Web_API.Others;
 
 namespace Web_API.Controllers;
 
@@ -41,13 +41,34 @@ public class AccountController : ControllerBase
         switch (result)
         {
             case 0:
-                return BadRequest("Registration failed");
+                return BadRequest(new ResponseVM<string>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Registration failed"
+                });
             case 1:
-                return BadRequest("Email already exists");
+                return BadRequest(new ResponseVM<string>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Email already exists"
+                });
             case 2:
-                return BadRequest("Phone number already exists");
+                return BadRequest(new ResponseVM<string>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Phone number already exists"
+                });
             case 3:
-                return Ok("Registration success");
+                return Ok(new ResponseVM<RegisterVM>
+                {
+                    Code = StatusCodes.Status200OK,
+                    Status = HttpStatusCode.OK.ToString(),
+                    Message = "Register Success",
+                    Data = registerVM
+                });
         }
 
         return Ok();
@@ -126,7 +147,12 @@ public class AccountController : ControllerBase
         var getGuid = _employeeRepository.FindGuidByEmail(email);
         if (getGuid == null)
         {
-            return NotFound("Akun tidak ditemukan");
+            return NotFound(new ResponseVM<AccountVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Account Not Found"
+            });
         }
 
         var isUpdated = _accountRepository.UpdateOTP(getGuid);
@@ -134,7 +160,12 @@ public class AccountController : ControllerBase
         switch (isUpdated)
         {
             case 0:
-                return BadRequest();
+                return BadRequest(new ResponseVM<AccountVM>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Failed Update OTP"
+                });
             default:
                 var hasil = new AccountResetPasswordVM
                 {
@@ -149,7 +180,12 @@ public class AccountController : ControllerBase
                            .WithEmail(email)
                            .Send();
 
-                return Ok(hasil);
+                return Ok(new ResponseVM<AccountResetPasswordVM>
+                {
+                    Code = StatusCodes.Status200OK,
+                    Status = HttpStatusCode.OK.ToString(),
+                    Message = "Account Reset Success"
+                });
         }
     } // End Kelompok 5
 
@@ -159,11 +195,23 @@ public class AccountController : ControllerBase
         var account = _accountRepository.GetAll();
         if (account is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<AccountVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data Account Not Found"
+            });
         }
+
         var resultConverted = account.Select(_accountMapper.Map).ToList();
 
-        return Ok(account);
+        return Ok(new ResponseVM<List<AccountVM>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success",
+            Data = resultConverted
+        });
     }
 
     [HttpGet("{guid}")]
@@ -172,12 +220,23 @@ public class AccountController : ControllerBase
         var account = _accountRepository.GetByGuid(guid);
         if (account is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<List<AccountVM>>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Guid Account Not Found",
+            });
         }
 
         var data = _accountMapper.Map(account);
 
-        return Ok(account);
+        return Ok(new ResponseVM<AccountVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Guid Found",
+            Data = data
+        });
     }
 
     [HttpPost]
@@ -187,10 +246,20 @@ public class AccountController : ControllerBase
         var result = _accountRepository.Create(accountConverted);
         if (result is null)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed Create Account"
+            });
         }
 
-        return Ok(result);
+        return Ok(new ResponseVM<AccountVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Create Account"
+        });
     }
 
 
@@ -201,10 +270,20 @@ public class AccountController : ControllerBase
         var isUpdated = _accountRepository.Update(accountConverted);
         if (!isUpdated)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed Update Account"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<AccountVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Update Account"
+        });
     }
 
     [HttpDelete("{guid}")]
@@ -213,10 +292,20 @@ public class AccountController : ControllerBase
         var isDeleted = _accountRepository.Delete(guid);
         if (!isDeleted)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<AccountVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Failed Delete Account"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<AccountVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success, Account has been deleted"
+        });
     }
 
 }

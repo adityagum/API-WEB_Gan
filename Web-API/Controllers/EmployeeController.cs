@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Web_API.Contracts;
 using Web_API.Models;
 using Web_API.ViewModels.Educations;
 using Web_API.ViewModels.Employees;
+using Web_API.Others;
+using Web_API.ViewModels.Accounts;
 
 namespace Web_API.Controllers;
 
@@ -34,10 +37,21 @@ public class EmployeeController : ControllerBase
         var masterEmployees = _employeeRepository.GetAllMasterEmployee();
         if (!masterEmployees.Any())
         {
-            return NotFound();
+            return NotFound(new ResponseVM<string>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Employee Not Found"
+            });
         }
 
-        return Ok(masterEmployees);
+        return Ok(new ResponseVM<IEnumerable<MasterEmployeeVM>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Employee Found",
+            Data = masterEmployees
+        });
     }
 
     [HttpGet("GetMasterEmployeeByGuid")]
@@ -46,10 +60,21 @@ public class EmployeeController : ControllerBase
         var masterEmployees = _employeeRepository.GetMasterEmployeeByGuid(guid);
         if (masterEmployees is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<string>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Employee Not Found"
+            });
         }
 
-        return Ok(masterEmployees);
+        return Ok(new ResponseVM<MasterEmployeeVM>
+        {
+            Code = 200,
+            Status = "OK",
+            Message = "Employee Found",
+            Data = masterEmployees
+        });
     }
 
     // End Kel 1
@@ -60,12 +85,23 @@ public class EmployeeController : ControllerBase
         var employees = _employeeRepository.GetAll();
         if (!employees.Any())
         {
-            return NotFound();
+            return NotFound(new ResponseVM<AccountVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data Employee Not Found"
+            });
         }
 
         var empresult = employees.Select(_empmapper.Map).ToList();
 
-        return Ok(empresult);
+        return Ok(new ResponseVM<IEnumerable<AccountVM>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success",
+            Data = (IEnumerable<AccountVM>)empresult
+        });
     }
 
     [HttpGet("{guid}")]
@@ -74,27 +110,24 @@ public class EmployeeController : ControllerBase
         var employee = _employeeRepository.GetByGuid(guid);
         if (employee is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<List<EmployeVM>>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Guid by Employee Not Found",
+            });
         }
 
-        /*var empresult = _empmapper.Map(employee);*/
+        var empresult = _empmapper.Map(employee);
 
-        return Ok(employee);
-    }
-
-    /*[HttpGet("{guid3table}")]
-    public IActionResult GetEmployeeById(Guid guid)
-    {
-        var employee = _employeeRepository.GetEmployeeById(guid);
-        if (employee is null)
+        return Ok(new ResponseVM<EmployeVM>
         {
-            return NotFound();
-        }
-
-        *//*var empresult = _empmapper.Map(employee);*//*
-
-        return Ok(employee);
-    }*/
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found the Guid",
+            Data = empresult
+        });
+    }
 
     [HttpPost]
     public IActionResult Create(EmployeVM employeVM)
@@ -103,10 +136,20 @@ public class EmployeeController : ControllerBase
         var result = _employeeRepository.Create(empconverted);
         if (result is null)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EmployeVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed to create Employee, please check your input type"
+            });
         }
 
-        return Ok(result);
+        return Ok(new ResponseVM<EmployeVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Create Employee"
+        });
     }
 
     [HttpPut]
@@ -116,10 +159,20 @@ public class EmployeeController : ControllerBase
         var isUpdated = _employeeRepository.Update(empconverted);
         if (!isUpdated)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EmployeVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed Update Employee"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<EmployeVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Update Employee"
+        });
     }
 
     [HttpDelete("{guid}")]
@@ -128,9 +181,19 @@ public class EmployeeController : ControllerBase
         var isDeleted = _employeeRepository.Delete(guid);
         if (!isDeleted)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EmployeVM>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Guid was not found, failed to delete Employee"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<EmployeVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Delete Employee"
+        });
     }
 }

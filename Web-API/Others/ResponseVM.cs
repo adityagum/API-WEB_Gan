@@ -1,4 +1,4 @@
-﻿namespace Web_API.ViewModels.Response
+﻿namespace Web_API.Others
 {
     public class ResponseVM<TEntity>
     {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Web_API.Contracts;
 using Web_API.Models;
+using Web_API.Others;
 using Web_API.Repositories;
 using Web_API.ViewModels.Educations;
 using Web_API.ViewModels.Universities;
@@ -28,24 +30,25 @@ public class EducationController : ControllerBase
     [HttpGet]
     public IActionResult GetAll()
     {
-        /*var room = _educationRepository.GetAll();
-        if (room is null)
-        {
-            return NotFound();
-        }
-
-        var resultConverted = room.Select(EducationVM.ToVM);
-        return Ok(resultConverted);
-        return Ok(room);*/
-
         var education = _educationRepository.GetAll();
         if (!education.Any())
         {
-            return NotFound();
+            return NotFound(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data was not found"
+            });
         }
         var resultConverted = education.Select(_educationVMMapper.Map).ToList();
 
-        return Ok(education);
+        return Ok(new ResponseVM<List<EducationVM>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found Data Education",
+            Data = resultConverted
+        });
     }
 
     [HttpGet("{guid}")]
@@ -54,12 +57,23 @@ public class EducationController : ControllerBase
         var room = _educationRepository.GetByGuid(guid);
         if (room is null)
         {
-            return NotFound();
+            return NotFound(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Guid not found"
+            });
         }
 
         var data = _educationVMMapper.Map(room);
 
-        return Ok(data);
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found the data education by Guid",
+            Data = data
+        });
     }
 
     [HttpPost]
@@ -69,10 +83,21 @@ public class EducationController : ControllerBase
         var result = _educationRepository.Create(educationConverted);
         if (result is null)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status400BadRequest
+                    ,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Something wrong, please check your input. Create education failed.."
+            });
         }
 
-        return Ok(result);
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Create Education"
+        });
     }
 
 
@@ -83,9 +108,20 @@ public class EducationController : ControllerBase
         var isUpdated = _educationRepository.Update(educationConverted);
         if (!isUpdated)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status400BadRequest
+                    ,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Failed to update Education"
+            });
         }
-        return Ok();
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Update Education"
+        });
     }
 
     [HttpDelete("{guid}")]
@@ -94,10 +130,21 @@ public class EducationController : ControllerBase
         var isDeleted = _educationRepository.Delete(guid);
         if (!isDeleted)
         {
-            return BadRequest();
+            return BadRequest(new ResponseVM<EducationVM>
+            {
+                Code = StatusCodes.Status400BadRequest
+                    ,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Guid was not found, failed to delete education"
+            });
         }
 
-        return Ok();
+        return Ok(new ResponseVM<EducationVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Success Delete Education"
+        });
     }
 
 }
