@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using System;
+using System.Net;
 using Web_API.Contracts;
 using Web_API.Models;
 using Web_API.Repositories;
 using Web_API.Utility;
 using Web_API.ViewModels.Accounts;
 using Web_API.ViewModels.Educations;
+using Web_API.ViewModels.Employees;
 using Web_API.ViewModels.Login;
+using Web_API.ViewModels.Response;
 
 namespace Web_API.Controllers;
 
@@ -48,6 +53,7 @@ public class AccountController : ControllerBase
         return Ok();
     } // End Kelompok 2
 
+    // Kelompok 3
     [HttpPost("login")]
     public IActionResult Login(LoginVM loginVM)
     {
@@ -55,16 +61,34 @@ public class AccountController : ControllerBase
 
         if (account == null)
         {
-            return NotFound("Account not found");
+            return NotFound(new ResponseVM<string>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Account not found"
+            });
         }
 
         if (account.Password != loginVM.Password)
         {
-            return BadRequest("Password is invalid");
+            return NotFound(new ResponseVM<string>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Password is invalid"
+            });
         }
 
-        return Ok("Login Successfully");
+        return Ok(
+            new ResponseVM<LoginVM>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Login Successfully",
+                Data = account
+            });
     }
+    // End Kelompok 3
 
     // Kelompok 6
     [HttpPost("ChangePassword")]

@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using Web_API.Contracts;
 using Web_API.Models;
 using Web_API.ViewModels.Bookings;
+using Web_API.ViewModels.Employees;
+using Web_API.ViewModels.Login;
+using Web_API.ViewModels.Response;
 
 namespace Web_API.Controllers;
 
@@ -118,37 +122,31 @@ public class BookingController : ControllerBase
         return Ok();
     }
 
+    // Kelompok 3
     [HttpGet("bookingduration")]
     public IActionResult GetDuration()
     {
-        var bookingLengths = _bookingRepository.GetBookingDuration();
-        if (!bookingLengths.Any())
+        var bookingdurations = _bookingRepository.GetBookingDuration();
+        if (!bookingdurations.Any())
         {
-            return NotFound();
+            return NotFound(new ResponseVM<string>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "No one has made a booking yet, so the old booking data is empty"
+            });
         }
 
-        return Ok(bookingLengths);
+        return Ok(
+            new ResponseVM<IEnumerable<BookingDurationVM>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Booking duration data found",
+                Data = bookingdurations
+            });
     }
-
-
-    /*[HttpGet("length/{guid}")]
-    public IActionResult GetBookingLength(Guid guid)
-    {
-        var booking = _bookingRepository.GetByGuid(guid);
-        if (booking == null)
-        {
-            return NotFound();
-        }
-
-        var bookingLength = _bookingRepository.calculateBooking(DateTime startDate, DateTime endDate);
-
-        var data = new
-        {
-            RoomName = booking.Room?.RoomName,
-            BookingLength = bookingLength
-        };
-
-        return Ok(data);*/
+    // End Kelompok 3
 }
 
 
