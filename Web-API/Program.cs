@@ -24,6 +24,10 @@ builder.Services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 builder.Services.AddSingleton(typeof(IMapper<,>), typeof(Mapper<,>));
+builder.Services.AddTransient<IEmailService, EmailService>(_ => new EmailService(
+                smtpServer: builder.Configuration["Email:SmtpServer"],
+                smtpPort: int.Parse(builder.Configuration["Email:SmtpPort"]),
+                fromEmailAddress: builder.Configuration["Email:FromEmailAddress"]));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

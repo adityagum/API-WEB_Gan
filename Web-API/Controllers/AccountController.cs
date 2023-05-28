@@ -1,15 +1,8 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Web_API.Contracts;
 using Web_API.Models;
-using Web_API.Repositories;
-using Web_API.Utility;
 using Web_API.ViewModels.Accounts;
-using Web_API.ViewModels.Educations;
-using Web_API.ViewModels.Employees;
 using Web_API.ViewModels.Login;
 using Web_API.Others;
 
@@ -23,14 +16,17 @@ public class AccountController : ControllerBase
     private readonly IAccountRepository _accountRepository;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IMapper<Account, AccountVM> _accountMapper;
+    private readonly IEmailService _emailService;
 
     public AccountController(IAccountRepository accountRepository,
         IMapper<Account, AccountVM> accountMapper,
-        IEmployeeRepository employeeRepository)
+        IEmployeeRepository employeeRepository,
+        IEmailService emailService)
     {
         _accountRepository = accountRepository;
         _accountMapper = accountMapper;
         _employeeRepository = employeeRepository;
+        _emailService = emailService;
     }
 
     // Kelompok 2
@@ -121,29 +117,63 @@ public class AccountController : ControllerBase
         switch (changePass)
         {
             case 0:
-                return BadRequest("");
+                return BadRequest(new ResponseVM<ChangePasswordVM>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "ChangePassword Failed"
+                });
             case 1:
-                return Ok("Password has been changed successfully");
+                return Ok(new ResponseVM<ChangePasswordVM>
+                {
+                    Code = StatusCodes.Status200OK,
+                    Status = HttpStatusCode.OK.ToString(),
+                    Message = "ChangePassword Success"
+                });
             case 2:
-                return BadRequest("Invalid OTP");
+                return BadRequest(new ResponseVM<ChangePasswordVM>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "invalidOTP "
+                });
             case 3:
-                return BadRequest("OTP has already been used");
-            case 4:
-                return BadRequest("OTP expired");
-            case 5:
-                return BadRequest("Wrong Password No Same");
-            default:
-                return BadRequest();
-        }
-        return null;
 
+                return BadRequest(new ResponseVM<ChangePasswordVM>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "OTP has already been used"
+                });
+            case 4:
+                return BadRequest(new ResponseVM<ChangePasswordVM>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "OTP expired"
+                });
+            case 5:
+                return BadRequest(new ResponseVM<ChangePasswordVM>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Wrong Password No Same"
+                });
+            default:
+                return BadRequest(new ResponseVM<ChangePasswordVM>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Error"
+                });
+        }
     }
 
     // Kelompok 5
     [HttpPost("ForgotPassword" + "{email}")]
     public IActionResult UpdateResetPass(String email)
     {
-
+        var response = new ResponseVM<AccountResetPasswordVM>();
         var getGuid = _employeeRepository.FindGuidByEmail(email);
         if (getGuid == null)
         {
@@ -151,7 +181,7 @@ public class AccountController : ControllerBase
             {
                 Code = StatusCodes.Status404NotFound,
                 Status = HttpStatusCode.NotFound.ToString(),
-                Message = "Account Not Found"
+                Message = "Email not found"
             });
         }
 
@@ -160,12 +190,7 @@ public class AccountController : ControllerBase
         switch (isUpdated)
         {
             case 0:
-                return BadRequest(new ResponseVM<AccountVM>
-                {
-                    Code = StatusCodes.Status400BadRequest,
-                    Status = HttpStatusCode.NotFound.ToString(),
-                    Message = "Failed Update OTP"
-                });
+                return BadRequest();
             default:
                 var hasil = new AccountResetPasswordVM
                 {
@@ -173,21 +198,28 @@ public class AccountController : ControllerBase
                     OTP = isUpdated
                 };
 
-                MailService mailService = new MailService();
-                mailService.WithSubject("Kode OTP")
-                           .WithBody("OTP anda adalah: " + isUpdated.ToString() + ".\n" +
-                                     "Mohon kode OTP anda tidak diberikan kepada pihak lain" + ".\n" + "Terima kasih.")
-                           .WithEmail(email)
-                           .Send();
+                /* MailService mailService = new MailService();
+            mailService.WithSubject("Kode OTP")
+                       .WithBody("OTP anda adalah: " + isUpdated.ToString() + ".\n" +
+                                 "Mohon kode OTP anda tidak diberikan kepada pihak lain" + ".\n" + "Terima kasih.")
+                       .WithEmail(email)
+                       .Send();*/
 
-                return Ok(new ResponseVM<AccountResetPasswordVM>
+                _emailService.SetEmail(email)
+                    .SetSubject("Forgot Passowrd")
+                    .SetHtmlMessage($"Your OTP is {isUpdated}")
+                    .SendEmailAsync();
+
+                return Ok(new ResponseVM<List<AccountVM>>
                 {
                     Code = StatusCodes.Status200OK,
                     Status = HttpStatusCode.OK.ToString(),
-                    Message = "Account Reset Success"
+                    Message = "OTP has been sent to your email"
                 });
+
         }
-    } // End Kelompok 5
+    }
+    // End Kelompok 5
 
     [HttpGet]
     public IActionResult GetAll()

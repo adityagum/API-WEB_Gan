@@ -3,6 +3,7 @@ using Microsoft.Identity.Client;
 using Web_API.Contexts;
 using Web_API.Contracts;
 using Web_API.Models;
+using Web_API.Utility;
 using Web_API.ViewModels.Accounts;
 using Web_API.ViewModels.Login;
 
@@ -86,7 +87,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
             var account = new Account
             {
                 Guid = employee.Guid,
-                Password = registerVM.Password,
+                Password = Hashing.HashPassword(registerVM.Password),
                 IsDeleted = false,
                 IsUsed = true,
                 OTP = 0
@@ -101,7 +102,6 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
         {
             return 0;
         }
-
     }
 
     private string GenerateNIK()
