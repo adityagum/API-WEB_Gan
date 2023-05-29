@@ -7,7 +7,7 @@ namespace Web_API.Repositories;
 Repository ini berfungsi untuk melakukan interaksi dengan database, sama halnya dengan kita ingin 
 menambahkan data, mengambil data, update atau delete. 
  */
-public class GenericRepository<T> : IGenericRepository<T> where T : class
+public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
     protected readonly BookingManagementDbContext _context;
 
@@ -16,19 +16,19 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _context = context;
     }
 
-    public T? Create(T t)
+    public TEntity? Create(TEntity tentity)
     {
         try
         {
-            typeof(T).GetProperty("CreatedDate")!
-                .SetValue(t, DateTime.Now);
+            typeof(TEntity).GetProperty("CreatedDate")!
+                .SetValue(tentity, DateTime.Now);
 
-            typeof(T).GetProperty("ModifiedDate")!
-                .SetValue(t, DateTime.Now);
+            typeof(TEntity).GetProperty("ModifiedDate")!
+                .SetValue(tentity, DateTime.Now);
 
-            _context.Set<T>().Add(t);
+            _context.Set<TEntity>().Add(tentity);
             _context.SaveChanges();
-            return t;
+            return tentity;
         }
         catch
         {
@@ -36,27 +36,27 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-    public bool Update(T t)
+    public bool Update(TEntity tentity)
     {
         try
         {
-            var guid = (Guid) typeof(T).GetProperty("Guid")!
-                                       .GetValue(t)!;
+            var guid = (Guid) typeof(TEntity).GetProperty("Guid")!
+                                       .GetValue(tentity)!;
             var oldEntity = GetByGuid(guid);
             if (oldEntity == null) {
                 return false;
             }
 
-            var getCreatedDate = typeof(T).GetProperty("CreatedDate")!
+            var getCreatedDate = typeof(TEntity).GetProperty("CreatedDate")!
                                           .GetValue(oldEntity)!;
 
-            typeof(T).GetProperty("CreatedDate")!
-                .SetValue(t, getCreatedDate);
+            typeof(TEntity).GetProperty("CreatedDate")!
+                .SetValue(tentity, getCreatedDate);
 
-            typeof(T).GetProperty("ModifiedDate")!
-                .SetValue(t, DateTime.Now);
+            typeof(TEntity).GetProperty("ModifiedDate")!
+                .SetValue(tentity, DateTime.Now);
 
-            _context.Set<T>().Update(t);
+            _context.Set<TEntity>().Update(tentity);
             _context.SaveChanges();
             return true;
         }
@@ -76,7 +76,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
                 return false;
             }
 
-            _context.Set<T>().Remove(t);
+            _context.Set<TEntity>().Remove(t);
             _context.SaveChanges();
             return true;
         }
@@ -86,21 +86,21 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
-    public IEnumerable<T> GetAll()
+    public IEnumerable<TEntity> GetAll()
     {
-        return _context.Set<T>().ToList();
+        return _context.Set<TEntity>().ToList();
     }
 
-    public T GetByGuid(Guid guid)
+    public TEntity GetByGuid(Guid guid)
     {
-        var entity = _context.Set<T>().Find(guid);
+        var entity = _context.Set<TEntity>().Find(guid);
         _context.ChangeTracker.Clear();
         return entity;
     }
 
-    public T GetByName(T t)
+    public TEntity GetByName(TEntity tentity)
     {
-        return _context.Set<T>().Find(t);
+        return _context.Set<TEntity>().Find(tentity);
     }
 
 }

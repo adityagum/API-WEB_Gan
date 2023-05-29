@@ -12,14 +12,15 @@ namespace Web_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class BookingController : ControllerBase
+public class BookingController : BaseController<Booking, BookingVM>
 {
     private readonly IBookingRepository _bookingRepository;
-    private readonly IMapper<Booking, BookingVM> _bkmapper;
-    public BookingController(IBookingRepository bookingRepository, IMapper<Booking, BookingVM> bkmapper)
+    private readonly IMapper<Booking, BookingVM> _mapper;
+    public BookingController(IBookingRepository bookingRepository,
+        IMapper<Booking, BookingVM> mapper) : base(bookingRepository, mapper)
     {
         _bookingRepository = bookingRepository;
-        _bkmapper = bkmapper;
+        _mapper = mapper;
     }
 
     // Kelompok 4
@@ -81,121 +82,6 @@ public class BookingController : ControllerBase
         }
     }
     // End Kelompok 4
-
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        var bookings = _bookingRepository.GetAll();
-        if (!bookings.Any())
-        {
-            return NotFound(new ResponseVM<BookingVM>
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Status = HttpStatusCode.BadRequest.ToString(),
-                Message = "Booking data was not found"
-            });
-        }
-
-        var data = bookings.Select(_bkmapper.Map).ToList();
-
-        return Ok(new ResponseVM<List<BookingVM>>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Showing the data of booking: ",
-            Data = data
-
-        });
-    }
-    [HttpGet("{guid}")]
-    public IActionResult GetByGuid(Guid id)
-    {
-        var booking = _bookingRepository.GetByGuid(id);
-        if (booking is null)
-        {
-            return NotFound(new ResponseVM<BookingVM>
-            {
-                Code = StatusCodes.Status404NotFound,
-                Status = HttpStatusCode.NotFound.ToString(),
-                Message = "Guid not found"
-            });
-        }
-
-        var data = _bkmapper.Map(booking);
-
-        return Ok(new ResponseVM<BookingVM>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success to find the Guid, showing data:",
-            Data = data
-        });
-    }
-
-    [HttpPost]
-    public IActionResult Create(BookingVM bookingVM)
-    {
-        var bkconverted = _bkmapper.Map(bookingVM);
-        var result = _bookingRepository.Create(bkconverted);
-        if (result is null)
-        {
-            return BadRequest(new ResponseVM<BookingVM>
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Status = HttpStatusCode.BadRequest.ToString(),
-                Message = "Failed Create Booking"
-            });
-        }
-
-        return Ok(new ResponseVM<BookingVM>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success Create Booking"
-        });
-    }
-    [HttpPut]
-    public IActionResult Update(BookingVM bookingVM)
-    {
-        var bkconverted = (_bkmapper.Map(bookingVM));
-        var IsUpdate = _bookingRepository.Update(bkconverted);
-        if (IsUpdate)
-        {
-            return BadRequest(new ResponseVM<BookingVM>
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Status = HttpStatusCode.OK.ToString(),
-                Message = "Failed Update Booking"
-            });
-        }
-
-        return Ok(new ResponseVM<BookingVM>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success Update Booking"
-        });
-    }
-    [HttpDelete("{guid}")]
-    public IActionResult Delete(Guid guid)
-    {
-        var isDeleted = _bookingRepository.Delete(guid);
-        if (isDeleted)
-        {
-            return BadRequest(new ResponseVM<Guid>
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Status = HttpStatusCode.OK.ToString(),
-                Message = "Failed Delete Booking"
-            });
-        }
-        return Ok(new ResponseVM<Guid>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success delete booking by Guid"
-        });
-    }
 
     // Kelompok 3
     [HttpGet("bookingduration")]

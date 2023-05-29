@@ -11,20 +11,20 @@ namespace Web_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AccountController : ControllerBase
+public class AccountController : BaseController<Account, AccountVM>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly IEmployeeRepository _employeeRepository;
-    private readonly IMapper<Account, AccountVM> _accountMapper;
+    private readonly IMapper<Account, AccountVM> _mapper;
     private readonly IEmailService _emailService;
 
     public AccountController(IAccountRepository accountRepository,
-        IMapper<Account, AccountVM> accountMapper,
+        IMapper<Account, AccountVM> mapper,
         IEmployeeRepository employeeRepository,
-        IEmailService emailService)
+        IEmailService emailService) : base(accountRepository, mapper)
     {
         _accountRepository = accountRepository;
-        _accountMapper = accountMapper;
+        _mapper = mapper;
         _employeeRepository = employeeRepository;
         _emailService = emailService;
     }
@@ -220,124 +220,4 @@ public class AccountController : ControllerBase
         }
     }
     // End Kelompok 5
-
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        var account = _accountRepository.GetAll();
-        if (account is null)
-        {
-            return NotFound(new ResponseVM<AccountVM>
-            {
-                Code = StatusCodes.Status404NotFound,
-                Status = HttpStatusCode.NotFound.ToString(),
-                Message = "Data Account Not Found"
-            });
-        }
-
-        var resultConverted = account.Select(_accountMapper.Map).ToList();
-
-        return Ok(new ResponseVM<List<AccountVM>>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success",
-            Data = resultConverted
-        });
-    }
-
-    [HttpGet("{guid}")]
-    public IActionResult GetByGuid(Guid guid)
-    {
-        var account = _accountRepository.GetByGuid(guid);
-        if (account is null)
-        {
-            return NotFound(new ResponseVM<List<AccountVM>>
-            {
-                Code = StatusCodes.Status404NotFound,
-                Status = HttpStatusCode.NotFound.ToString(),
-                Message = "Guid Account Not Found",
-            });
-        }
-
-        var data = _accountMapper.Map(account);
-
-        return Ok(new ResponseVM<AccountVM>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Guid Found",
-            Data = data
-        });
-    }
-
-    [HttpPost]
-    public IActionResult Create(AccountVM accountVM)
-    {
-        var accountConverted = _accountMapper.Map(accountVM);
-        var result = _accountRepository.Create(accountConverted);
-        if (result is null)
-        {
-            return BadRequest(new ResponseVM<AccountVM>
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Status = HttpStatusCode.BadRequest.ToString(),
-                Message = "Failed Create Account"
-            });
-        }
-
-        return Ok(new ResponseVM<AccountVM>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success Create Account"
-        });
-    }
-
-
-    [HttpPut]
-    public IActionResult Update(AccountVM accountVM)
-    {
-        var accountConverted = _accountMapper.Map(accountVM);
-        var isUpdated = _accountRepository.Update(accountConverted);
-        if (!isUpdated)
-        {
-            return BadRequest(new ResponseVM<AccountVM>
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Status = HttpStatusCode.BadRequest.ToString(),
-                Message = "Failed Update Account"
-            });
-        }
-
-        return Ok(new ResponseVM<AccountVM>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success Update Account"
-        });
-    }
-
-    [HttpDelete("{guid}")]
-    public IActionResult Delete(Guid guid)
-    {
-        var isDeleted = _accountRepository.Delete(guid);
-        if (!isDeleted)
-        {
-            return BadRequest(new ResponseVM<AccountVM>
-            {
-                Code = StatusCodes.Status400BadRequest,
-                Status = HttpStatusCode.NotFound.ToString(),
-                Message = "Failed Delete Account"
-            });
-        }
-
-        return Ok(new ResponseVM<AccountVM>
-        {
-            Code = StatusCodes.Status200OK,
-            Status = HttpStatusCode.OK.ToString(),
-            Message = "Success, Account has been deleted"
-        });
-    }
-
 }

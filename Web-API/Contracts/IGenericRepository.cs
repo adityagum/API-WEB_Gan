@@ -7,15 +7,11 @@
  * Dalam sisi OOP, folder ini sama dengan abstract yaitu kita menyembunyikan detail. Singkatnya Controller
  * tidak perlu tau isi dari Repositories
  */
-public interface IGenericRepository <T> where T : class
+public interface IGenericRepository<TEntity>
 {
-    T? Create(T t); // Dibuat nullable karena bisa saja dia bermasalah ketika menginputkan
-    bool Update(T t);
+    TEntity? Create(TEntity entity);
+    bool Update(TEntity entity);
     bool Delete(Guid guid);
-    IEnumerable<T> GetAll();
-    T GetByGuid(Guid guid);
-  /*  T GetByName(T t);*/
-
-   
-
+    IEnumerable<TEntity> GetAll();
+    TEntity? GetByGuid(Guid guid);
 }
