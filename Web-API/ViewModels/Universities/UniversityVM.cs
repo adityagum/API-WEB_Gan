@@ -1,11 +1,16 @@
-﻿using Web_API.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Web_API.Models;
 
 namespace Web_API.ViewModels.Universities;
 
 public class UniversityVM
 {
     public Guid? Guid { get; set; }
+
+    [Required(ErrorMessage = "Code Univ has already exist")]
     public string Code { get; set; }
+
+    [Required(ErrorMessage = "Univ Name has already exist")]
     public string Name { get; set; }
 
     /*public static UniversityVM ToVM(University university)

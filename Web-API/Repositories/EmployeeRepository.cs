@@ -8,8 +8,8 @@ namespace Web_API.Repositories;
 
 public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
 {
-   /* private readonly IEducationRepository _educationRepository;
-    private readonly IUniversityRepository _universityRepository;*/
+    /* private readonly IEducationRepository _educationRepository;
+     private readonly IUniversityRepository _universityRepository;*/
 
     /*public EmployeeRepository(BookingManagementDbContext context, 
         IEducationRepository educationRepository,
@@ -140,8 +140,18 @@ public class EmployeeRepository : GenericRepository<Employee>, IEmployeeReposito
         catch
         {
             return null;
-        }   
+        }
 
     }
 
+    public bool CheckEmailAndPhoneAndNIK(string value)
+    {
+        return _context.Employees.Any(a => a.Email == value || a.PhoneNumber == value || a.Nik == value);
+    }
+
+    public Employee GetByEmailAddress(string email)
+    {
+        var employee = _context.Set<Employee>().FirstOrDefault(e => e.Email == email);
+        return employee;
+    }
 }

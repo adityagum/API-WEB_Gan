@@ -14,5 +14,9 @@ namespace Web_API.Contracts
 
         // Kelompok 5
         Guid? FindGuidByEmail(string email);
+
+        bool CheckEmailAndPhoneAndNIK(string value);
+
+        public Employee GetByEmailAddress(string email);
     }
 }

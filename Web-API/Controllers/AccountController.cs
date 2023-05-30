@@ -5,6 +5,9 @@ using Web_API.Models;
 using Web_API.ViewModels.Accounts;
 using Web_API.ViewModels.Login;
 using Web_API.Others;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Web_API.ViewModels.Rooms;
 
 namespace Web_API.Controllers;
 
@@ -17,16 +20,19 @@ public class AccountController : BaseController<Account, AccountVM>
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IMapper<Account, AccountVM> _mapper;
     private readonly IEmailService _emailService;
+    private readonly ITokenService _tokenService;
 
     public AccountController(IAccountRepository accountRepository,
         IMapper<Account, AccountVM> mapper,
         IEmployeeRepository employeeRepository,
-        IEmailService emailService) : base(accountRepository, mapper)
+        IEmailService emailService,
+        ITokenService tokenService) : base(accountRepository, mapper)
     {
         _accountRepository = accountRepository;
         _mapper = mapper;
         _employeeRepository = employeeRepository;
         _emailService = emailService;
+        _tokenService = tokenService;
     }
 
     // Kelompok 2
@@ -63,7 +69,7 @@ public class AccountController : BaseController<Account, AccountVM>
                     Code = StatusCodes.Status200OK,
                     Status = HttpStatusCode.OK.ToString(),
                     Message = "Register Success",
-                    Data = registerVM
+                    Data = null
                 });
         }
 
@@ -96,16 +102,55 @@ public class AccountController : BaseController<Account, AccountVM>
             });
         }
 
+        var employee = _employeeRepository.GetByEmailAddress(loginVM.Email);
+        var claims = new List<Claim>
+        {
+            new (ClaimTypes.NameIdentifier, employee.Nik),
+            new (ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}"),
+            new (ClaimTypes.Email, employee.Email),
+        };
+
+        var roles = _accountRepository.GetRoles(employee.Guid);
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var token = _tokenService.GenerateToken(claims);
+
         return Ok(
-            new ResponseVM<LoginVM>
+            new ResponseVM<String>
             {
                 Code = StatusCodes.Status200OK,
                 Status = HttpStatusCode.OK.ToString(),
                 Message = "Login Successfully",
-                Data = account
+                Data = token
             });
     }
     // End Kelompok 3
+
+    [HttpGet("Token")]
+    public IActionResult GetToken(string token)
+    {
+        var data = _tokenService.ExtractClaimsFromJwt(token);
+        if (data is null)
+        {
+            return NotFound(new ResponseVM<ClaimVM>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Not Found Used Room"
+            });
+        }
+        return Ok(new ResponseVM<ClaimVM>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Found Used Room",
+            Data = data
+        });
+    }
 
     // Kelompok 6
     [HttpPost("ChangePassword")]
@@ -170,7 +215,7 @@ public class AccountController : BaseController<Account, AccountVM>
     }
 
     // Kelompok 5
-    [HttpPost("ForgotPassword" + "{email}")]
+    [HttpPost("ForgotPassword/{email}")]
     public IActionResult UpdateResetPass(String email)
     {
         var response = new ResponseVM<AccountResetPasswordVM>();

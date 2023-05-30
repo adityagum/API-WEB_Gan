@@ -16,5 +16,8 @@ namespace Web_API.Contracts
 
         // Kelompok 6
         int ChangePasswordAccount(Guid? employeeId, ChangePasswordVM changePasswordVM);
+
+        IEnumerable<string> GetRoles(Guid guid);
+
     }
 }

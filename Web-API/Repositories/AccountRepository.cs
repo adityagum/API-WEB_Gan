@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+using System.Security.Claims;
 using Web_API.Contexts;
 using Web_API.Contracts;
 using Web_API.Models;
@@ -50,8 +51,8 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
         {
             var university = new University
             {
-                Code = registerVM.Code,
-                Name = registerVM.Name
+                Code = registerVM.UniversityCode,
+                Name = registerVM.UniversityName
 
             };
             _universityRepository.CreateWithValidate(university);
@@ -67,12 +68,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
                 Email = registerVM.Email,
                 PhoneNumber = registerVM.PhoneNumber,
             };
-            var result = _employeeRepository.CreateWithValidate(employee);
-
-            if (result != 3)
-            {
-                return result;
-            }
+            var result = _employeeRepository.Create(employee);
 
             var education = new Education
             {
@@ -194,4 +190,16 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
         }
     }
 
+    public IEnumerable<string> GetRoles(Guid Guid)
+    {
+        var getAccount = GetByGuid(Guid);
+        if (getAccount == null) return Enumerable.Empty<string>();
+        var getAccountRoles = from accountRoles in _context.AccountRoles
+                              join roles in _context.Roles on accountRoles.RoleGuid equals roles.Guid
+                              where accountRoles.AccountGuid == Guid
+                              select roles.Name;
+
+        return getAccountRoles.ToList();
+
+    }
 }
