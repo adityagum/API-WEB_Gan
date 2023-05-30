@@ -6,6 +6,7 @@ using Web_API.ViewModels.Bookings;
 using Web_API.ViewModels.Employees;
 using Web_API.ViewModels.Login;
 using Web_API.Others;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web_API.Controllers;
 
@@ -25,6 +26,7 @@ public class BookingController : BaseController<Booking, BookingVM>
 
     // Kelompok 4
     [HttpGet("BookingDetail")]
+    [Authorize(Roles = "Manager")]
     public IActionResult GetAllBookingDetail()
     {
         try

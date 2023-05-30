@@ -91,6 +91,15 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
 
             Create(account);
 
+            var accountRole = new AccountRole
+            {
+                RoleGuid = Guid.Parse("0f1b24f1-b904-4c7a-2dd7-08db60bf525a"),
+                AccountGuid = employee.Guid
+            };
+
+            _context.AccountRoles.Add(accountRole);
+            _context.SaveChanges();
+
             return 3;
 
         }

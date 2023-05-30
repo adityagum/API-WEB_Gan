@@ -77,6 +77,7 @@ public class AccountController : BaseController<Account, AccountVM>
     } // End Kelompok 2
 
     // Kelompok 3
+    [AllowAnonymous]
     [HttpPost("login")]
     public IActionResult Login(LoginVM loginVM)
     {
@@ -130,7 +131,8 @@ public class AccountController : BaseController<Account, AccountVM>
     }
     // End Kelompok 3
 
-    [HttpGet("Token")]
+    
+    [HttpGet("GetDataByToken")]
     public IActionResult GetToken(string token)
     {
         var data = _tokenService.ExtractClaimsFromJwt(token);
@@ -140,14 +142,14 @@ public class AccountController : BaseController<Account, AccountVM>
             {
                 Code = StatusCodes.Status404NotFound,
                 Status = HttpStatusCode.NotFound.ToString(),
-                Message = "Not Found Used Room"
+                Message = "Token is invalid or expired"
             });
         }
         return Ok(new ResponseVM<ClaimVM>
         {
             Code = StatusCodes.Status200OK,
             Status = HttpStatusCode.OK.ToString(),
-            Message = "Found Used Room",
+            Message = "Claims has been retrieved",
             Data = data
         });
     }
