@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var jwToken = ViewData["JWToken"];
+}
+
+<style>
+    .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .large-textbox {
+        width: 1000px;
+        height: 300px;
+        font-size: 20px;
+        padding: 10px;
+    }
+</style>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="center-container">
+    <textarea id="jwtToken" readonly class="large-textbox">@jwToken</textarea>
+</div>

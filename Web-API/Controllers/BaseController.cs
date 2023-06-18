@@ -11,7 +11,8 @@ namespace Web_API.Controllers;
 [Route("api/[controller]")]
 /*[Authorize]*/
 /*[Authorize (Roles = "Admin, Manager")]*/
-[Authorize(Roles = $"{nameof(RoleLevel.Admin)}, {nameof(RoleLevel.Manager)}")]
+/*[Authorize(Roles = $"{nameof(RoleLevel.Admin)}, {nameof(RoleLevel.Manager)}")]*/
+//[AllowAnonymous]
 public class BaseController<TModel, TViewModel> : ControllerBase
 {
     private readonly IGenericRepository<TModel> _repository;
@@ -22,6 +23,7 @@ public class BaseController<TModel, TViewModel> : ControllerBase
         _repository = repository;
         _mapper = mapper;
     }
+
 
     [HttpGet]
     public IActionResult GetAll()
