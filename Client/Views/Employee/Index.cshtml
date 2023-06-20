@@ -3,13 +3,7 @@
 @{
     ViewData["Title"] = "Index";
 }
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Creates">Create New</a>
-</p>
-<table class="table">
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th>
@@ -73,9 +67,8 @@
                 @Html.DisplayFor(modelItem => item.PhoneNumber)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new {@item.Guid /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("GetAllEmp", "GetAllEmp", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Deletes", "Deletes", new {@item.Guid /* id=item.PrimaryKey */ })
+                    <a class="btn btn-primary" href="@Url.Action("Edit", new { id = item.Guid })">Edit</a>
+                    <a class="btn btn-danger" href="@Url.Action("Deletes", new { id = item.Guid })">Delete</a>
             </td>
         </tr>
 }

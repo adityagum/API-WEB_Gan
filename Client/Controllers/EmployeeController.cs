@@ -1,5 +1,6 @@
 ﻿using Client.Models;
 using Client.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Core.Types;
 using Web_API.Repositories;
@@ -21,6 +22,7 @@ public class EmployeeController : Controller
         this.educrepository = educrepository;
     }
 
+    [Authorize]
     public async Task<IActionResult> Index()
     {
         var result = await emprepository.Get();
@@ -44,7 +46,8 @@ public class EmployeeController : Controller
         return View(employees);
     }
 
-    public async Task<IActionResult> GetAllEmp()
+	[Authorize]
+	public async Task<IActionResult> GetAllEmp()
     {
         var result = await emprepository.GetAllEmp();
         var employees = new List<GetAllEmployee>();
@@ -71,13 +74,15 @@ public class EmployeeController : Controller
     }
 
 
-    public async Task<IActionResult> Creates()
+	[Authorize]
+	public async Task<IActionResult> Creates()
     {
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Creates(Employee employee)
+	[Authorize]
+	public async Task<IActionResult> Creates(Employee employee)
     {
         var result = await emprepository.Post(employee);
         if (result.StatusCode == "200")
@@ -93,7 +98,8 @@ public class EmployeeController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Deletes(Guid guid)
+	[Authorize(Roles = "Admin, Manager")]
+	public async Task<IActionResult> Deletes(Guid guid)
     {
         var result = await emprepository.Get(guid);
         var employee = new Employee();
@@ -128,7 +134,8 @@ public class EmployeeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(Employee employee)
+	[Authorize(Roles = "Admin, Manager")]
+	public async Task<IActionResult> Edit(Employee employee)
     {
 
 
@@ -147,7 +154,8 @@ public class EmployeeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit(Guid guid)
+	[Authorize(Roles = "Admin, Manager")]
+	public async Task<IActionResult> Edit(Guid guid)
     {
         var result = await emprepository.Get(guid);
         var employee = new Employee();

@@ -1,8 +1,10 @@
 ﻿using Client.Models;
 using Client.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Client.Controllers;
+
 
 public class UniversityController : Controller
 {
@@ -12,6 +14,8 @@ public class UniversityController : Controller
     {
         this.repository = repository;
     }
+
+    [Authorize]
     public async Task<IActionResult> Index()
     {
         var result = await repository.Get();
@@ -31,12 +35,14 @@ public class UniversityController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Creates()
     {
         return View();
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Creates(University university)
     {
         var result = await repository.Post(university);
@@ -53,48 +59,7 @@ public class UniversityController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
-
-    /*[HttpPost]
-    public async Task<IActionResult> Edit(University university)
-    {
-        *//*if (ModelState.IsValid)*/
-    /*{*//*
-    var result = await repository.Put(university.Guid, university);
-    if (result.StatusCode == "200")
-    {
-        return RedirectToAction(nameof(Index));
-    }
-    else if (result.StatusCode == "409")
-    {
-        ModelState.AddModelError(string.Empty, result.Message);
-        return View();
-    }
-    *//* }*//*
-    return RedirectToAction(nameof(Index));
-}
-
-[HttpGet]
-public async Task<IActionResult> Edit(Guid Guid)
-{
-    var result = await repository.Get(Guid);
-    var university = new University();
-    if (result.Data?.Guid is null)
-    {
-        return View(university);
-    }
-    else
-    {
-        university.Guid = result.Data.Guid;
-        university.Code = result.Data.Code;
-        university.Name = result.Data.Name;
-        university.CreatedDate = result.Data.CreatedDate;
-        university.ModifiedDate = DateTime.Now;
-    }
-
-    return View(university);
-}*/
-
+    [Authorize(Roles = "Admin, Manager")]
     public async Task<IActionResult> Deletes(Guid guid)
     {
         var result = await repository.Get(guid);
@@ -113,7 +78,8 @@ public async Task<IActionResult> Edit(Guid Guid)
     }
 
     [HttpPost]
-    public async Task<IActionResult> Remove(Guid guid)
+	[Authorize(Roles = "Admin, Manager")]
+	public async Task<IActionResult> Remove(Guid guid)
     {
         var result = await repository.Deletes(guid);
         if (result.StatusCode == "200")
@@ -124,7 +90,8 @@ public async Task<IActionResult> Edit(Guid Guid)
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(University university)
+	[Authorize(Roles = "Admin, Manager")]
+	public async Task<IActionResult> Edit(University university)
     {
 
 
@@ -143,7 +110,8 @@ public async Task<IActionResult> Edit(Guid Guid)
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit(Guid guid)
+	[Authorize(Roles = "Admin, Manager")]
+	public async Task<IActionResult> Edit(Guid guid)
     {
         var result = await repository.Get(guid);
         var university = new University();

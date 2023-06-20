@@ -24,7 +24,7 @@ namespace Client.Controllers
         public async Task<IActionResult> Logins(LoginVM login)
         {
             var result = await repository.Logins(login);
-            if (result is null)
+           /* if (result is null)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -32,14 +32,21 @@ namespace Client.Controllers
             {
                 ModelState.AddModelError(string.Empty, result.Message);
                 return View();
-            }
-            else if (result.Code == 200)
+            }*/
+            if (result.Code == 200)
             {
                 HttpContext.Session.SetString("JWToken", result.Data);
                 return RedirectToAction("Index", "Home");
             }
             return View();
 
+        }
+
+        [HttpGet("/Logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return Redirect("/Account/Logins");
         }
 
         [HttpGet]

@@ -52,7 +52,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseStatusCodePages(async context => {
+app.UseStatusCodePages(async context =>
+{
     var response = context.HttpContext.Response;
 
     if (response.StatusCode.Equals((int)HttpStatusCode.Unauthorized))
@@ -71,7 +72,6 @@ app.UseStatusCodePages(async context => {
 
 app.UseSession();
 
-//Add JWToken to all incoming HTTP Request Header
 app.Use(async (context, next) =>
 {
     var JWToken = context.Session.GetString("JWToken");
@@ -84,10 +84,15 @@ app.Use(async (context, next) =>
     await next();
 });
 
+
+
+//Add JWToken to all incoming HTTP Request Header
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Logins}/{id?}");
 
 app.Run();

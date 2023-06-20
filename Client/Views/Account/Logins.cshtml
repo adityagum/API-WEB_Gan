@@ -1,37 +1,78 @@
 ﻿@model Client.ViewModels.LoginVM
 
 @{
-    ViewData["Title"] = "Logins";
+	ViewData["Title"] = "Logins";
+	
 }
 
-<h1>Logins</h1>
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Login 08</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<h4>LoginVM</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Logins">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Login" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<link rel="stylesheet" href="~/css/Login.css">
+
+</head>
+<body>
+	<section class="ftco-section">
+		<div class="container mt-0">
+			<div class="row justify-content-center">
+				<div class="col-md-6 col-lg-5">
+					<div class="login-wrap p-4 p-md-5">
+						<div class="icon d-flex align-items-center justify-content-center">
+							<span class="fa fa-user-o"></span>
+						</div>
+						<h3 class="text-center mb-4">Have an account?</h3>
+						<p class="text-center mb-4" style="font-size: 15px;">
+							If no, click for
+							<a href="/Account/Registers" style="color: darkblue;">Register</a>
+						</p>
+						<form asp-action="Logins">
+							<div asp-validation-summary="ModelOnly" class="form-group"></div>
+							<div class="form-group d-flex">
+								<input asp-for="Email" type="text" class="form-control rounded-left" placeholder="Email" required />
+								<span asp-validation-for="Email" class="text-danger"></span>
+							</div>
+							<div class="form-group d-flex">
+								<input asp-for="Password" type="password" class="form-control rounded-left" placeholder="Password" required>
+								<span asp-validation-for="Password" class="text-danger"></span>
+							</div>
+							<div class="form-group d-md-flex">
+								<div class="w-50">
+									<label class="checkbox-wrap checkbox-primary">
+										Remember Me
+										<input type="checkbox" checked>
+										<span class="checkmark"></span>
+									</label>
+								</div>
+								<div class="w-50 text-md-right">
+									<a href="#">Forgot Password</a>
+								</div>
+							</div>
+							<div class="form-group">
+								<button type="submit" class="btn btn-primary rounded submit p-3 px-5">Login</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/main-js/1.0.0/main.min.js"></script>
+
+
+</body>
+</html>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

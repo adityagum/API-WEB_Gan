@@ -4,12 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Creates">Create New</a>
-</p>
-<table class="table">
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th>
@@ -37,9 +32,8 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { @item.guid/* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Deletes", "Deletes", new { @item.guid/* id=item.PrimaryKey */ })
+                    <a class="btn btn-primary" href="@Url.Action("Edit", new { id = item.guid })">Edit</a>
+                    <a class="btn btn-danger" href="@Url.Action("Deletes", new { id = item.guid })">Delete</a>
             </td>
         </tr>
 }
